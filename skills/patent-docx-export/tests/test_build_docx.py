@@ -1,5 +1,7 @@
 """Tests for build_docx.py. Skips if python-docx is not installed."""
 
+import hashlib
+import json
 import shutil
 import subprocess
 import sys
@@ -39,8 +41,34 @@ def mod():
 def copy_project(tmp_path, name):
     dst = tmp_path / name
     shutil.copytree(FIXTURES / name, dst)
-    (dst / "07-drawings" / "fig1.png").write_bytes(MIN_PNG)
+    drawings = dst / "07-drawings"
+    drawings.mkdir(parents=True, exist_ok=True)
+    image = drawings / "fig1.png"
+    image.write_bytes(MIN_PNG)
+    digest = hashlib.sha256(MIN_PNG).hexdigest()
+    fig_id = "图1" if name == "tiny-cn" else "FIG. 1"
+    manifest = {
+        "sheets": [
+            {
+                "id": fig_id,
+                "image": "fig1.png",
+                "source": "fig1.dot",
+                "source_kind": "graphviz",
+                "sha256": digest,
+            }
+        ]
+    }
+    (drawings / "fig1.dot").write_text("digraph G { a -> b }\n", encoding="utf-8")
+    (drawings / "sheet_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return dst
+
+
+def media_names(path):
+    with zipfile.ZipFile(path) as zf:
+        return [name for name in zf.namelist() if name.startswith("word/media/")]
 
 
 def paragraph_text(path):
@@ -96,9 +124,13 @@ def test_cn_package(mod, tmp_path):
     assert "fig1.png" in drawings
     assert "图1" in drawings
     assert "figure_list.md" not in drawings
+    assert media_names(out / "说明书附图.docx")
 
     brief = "\n".join(paragraph_text(out / "摘要附图.docx"))
     assert "fig1.png" in brief
+    assert media_names(out / "摘要附图.docx")
+    hashes = json.loads((out / "sheet_hashes.json").read_text(encoding="utf-8"))
+    assert hashes["sheets"][0]["sha256"] == hashlib.sha256(MIN_PNG).hexdigest()
 
     document = docx.Document(str(out / "说明书.docx"))
     section = document.sections[0]
@@ -147,6 +179,40 @@ def test_pct_uses_a4_and_english_filenames(mod, tmp_path):
     assert_length_near(section.page_height, Mm(297))
     spec = "\n".join(paragraph_text(out / "specification.docx"))
     assert "[0001]" in spec
+
+
+def test_png_changed_after_hash_exits_1_and_writes_nothing(mod, tmp_path):
+    """Adversarial: the manifest is honest, then the PNG bytes change."""
+    project = copy_project(tmp_path, "tiny-cn")
+    image = project / "07-drawings" / "fig1.png"
+    image.write_bytes(image.read_bytes() + b"\x00")
+    out = tmp_path / "tampered-out"
+    code = mod.main(["--jurisdiction", "cn", "--project", str(project), "--out", str(out)])
+    assert code == 1
+    assert not out.exists() or not list(out.glob("*.docx"))
+    assert not (out / "sheet_hashes.json").exists()
+
+
+def test_checksum_mismatch_exits_1_and_writes_nothing(mod, tmp_path):
+    project = copy_project(tmp_path, "tiny-cn")
+    manifest_path = project / "07-drawings" / "sheet_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["sheets"][0]["sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    out = tmp_path / "bad-out"
+    code = mod.main(["--jurisdiction", "cn", "--project", str(project), "--out", str(out)])
+    assert code == 1
+    assert not out.exists() or not list(out.glob("*.docx"))
+
+
+def test_forbidden_source_exits_1(mod, tmp_path):
+    project = copy_project(tmp_path, "tiny-cn")
+    manifest_path = project / "07-drawings" / "sheet_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["sheets"][0]["source_kind"] = "image_model"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    code = mod.main(["--jurisdiction", "cn", "--project", str(project), "--out", str(tmp_path / "forbid-out")])
+    assert code == 1
 
 
 def test_missing_claims_exits_2(mod, tmp_path):

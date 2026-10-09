@@ -29,15 +29,30 @@ Read [`../../shared/jurisdictions.md`](../../shared/jurisdictions.md), [`../../s
 
 ## Procedure
 
-1. Confirm jurisdiction. CN claims are Chinese. US and PCT claims are English. One claim is one sentence.
-2. Choose only categories the disclosure supports. A use claim (用途权利要求) needs a use the inventor actually described.
-3. Write each independent claim (独立权利要求) so it states the technical solution as a whole, including the essential technical features (必要技术特征) that solve the stated problem.
+1. Read `unity_decision` in `03-inventive-points/inventive_points.md`.
+   If it is missing or `split-pending`, stop. Do not write one claim set
+   for groups that do not share a special technical feature (特定技术特征).
+   Ask the inventor to pick one group (`one-invention`) or to accept a
+   documented combination (`documented-combination`) in that file and in
+   `LOG.md`. The combination must name the shared feature. CN: 专利法
+   Art. 31 and 实施细则 (2023) Art. 39. US: 35 U.S.C. § 121 restriction,
+   which is not a Chinese unity holding. PCT: Rule 13.
+2. Write `04-claims/dependency_sketch.md` before any claim sentence.
+   Include the unity decision, each independent category, and the parent
+   of every dependent concept. Show it to the user. Continue only after
+   `我看过引用关系` or `I have looked at the dependency sketch` (or a clear
+   equivalent you quote in `LOG.md`). Do not write `claims.md` in the
+   same turn as the first sketch unless that quote is already in the
+   conversation.
+3. Confirm jurisdiction. CN claims are Chinese. US and PCT claims are English. One claim is one sentence.
+4. Choose only categories the disclosure supports. A use claim (用途权利要求) needs a use the inventor actually described. Stay inside the group the inventor selected.
+5. Write each independent claim (独立权利要求) so it states the technical solution as a whole, including the essential technical features (必要技术特征) that solve the stated problem.
    - CN default: two-part form (两段式). Preamble (前序部分) plus characterizing portion (特征部分) introduced by 其特征在于. Copy the skeleton in the CN template.
    - US: preamble, transition, body. Prefer `comprising` unless the inventor requires a closed claim (`consisting of`).
-4. Build the dependent-claim ladder (从属权利要求) from the fallback positions. One added feature per dependent claim where that stays readable. Each dependent claim refers only to an earlier claim.
-5. Give every element an antecedent. First mention is `a`/`an` or 一种/一个/若干/至少一个. Later mention is `the`/`said` or 所述. Along each alternative parent, the ancestor chain must contain that introduction.
-6. Multiple-dependent claims (多项从属权利要求) refer to earlier claims in the alternative only: 或 or 任一项 in Chinese; `or` or `any one of` in English. A multiple-dependent claim must not be the basis of another multiple-dependent claim. A single dependent claim may depend on a multiple-dependent claim.
-7. Run, from the skill repo:
+6. Build the dependent-claim ladder (从属权利要求) from the fallback positions. One added feature per dependent claim where that stays readable. Each dependent claim refers only to an earlier claim.
+7. Give every element an antecedent. First mention is `a`/`an` or 一种/一个/若干/至少一个. Later mention is `the`/`said` or 所述. Along each alternative parent, the ancestor chain must contain that introduction.
+8. Multiple-dependent claims (多项从属权利要求) refer to earlier claims in the alternative only: 或 or 任一项 in Chinese; `or` or `any one of` in English. A multiple-dependent claim must not be the basis of another multiple-dependent claim (实施细则 (2023) Art. 25). A single dependent claim may depend on a multiple-dependent claim.
+9. Run, from the skill repo:
 
 ```bash
 python3 skills/claims-drafter/scripts/check_antecedent.py <project>/04-claims/claims.md --lang auto
@@ -45,7 +60,11 @@ python3 skills/claims-drafter/scripts/check_antecedent.py <project>/04-claims/cl
 
 `--lang zh|en|auto`. Default output is a text report, then `===JSON===`. Exit 0 means no errors. Exit 1 means fix the file and run again. Exit 2 means the file was missing.
 
-8. Map each dependent claim to the fallback it preserves. Store that map in `04-claims/claim_map.md`.
+10. Map each dependent claim to the fallback it preserves. Store that map in `04-claims/claim_map.md`.
+11. Write `04-claims/fee_note.md`. Count the claims. Open the current fee page and say whether that count may add an excess-claim fee. If it may, list optional fallbacks the inventor could leave for a divisional or omit. Do not delete them, and do not add claims to reach a number. If the page will not open, say the warning is unverified. Do not type a currency amount.
+    - CN: [Announcement No. 244 (2017)](https://www.cnipa.gov.cn/art/2017/6/20/art_74_27458.html) and [Announcement No. 594 (2024)](https://www.cnipa.gov.cn/art/2024/8/6/art_74_194102.html). Read whichever table is in force.
+    - US: [USPTO fee schedule](https://www.uspto.gov/learning-and-resources/fees-and-payment/uspto-fee-schedule) and 37 CFR 1.16.
+    - PCT: [WIPO PCT fees](https://www.wipo.int/en/web/pct-system/fees).
 
 ## Human gate(s)
 
@@ -53,8 +72,10 @@ Claim-set lock (权利要求锁定). Stop after a clean script run and show the 
 
 ## Outputs
 
-- `04-claims/claims.md` — numbered claims (`1.` or fullwidth `1．`).
+- `04-claims/dependency_sketch.md` — categories and parents, written before the sentences.
+- `04-claims/claims.md` — numbered claims (`1.` or fullwidth `1．`), only after the sketch has been looked at and unity is `one-invention` or `documented-combination`.
 - `04-claims/claim_map.md` — claim number, category, parent, fallback covered.
+- `04-claims/fee_note.md` — fee-page warning and optional fallbacks. Not a claim ceiling.
 - Script JSON when a machine-readable report is useful.
 
 ## Quality checklist
@@ -66,6 +87,8 @@ Claim-set lock (权利要求锁定). Stop after a clean script run and show the 
 - Multiple dependencies are alternative, and none of those parents is itself multiple-dependent.
 - Reference numerals, if used, sit in parentheses and repeat the description's names. They do not add a limitation by themselves.
 - No measured effect, percentage, or example appears unless the inventor supplied it.
+- The dependency sketch was shown before `claims.md`.
+- `fee_note.md` does not delete or pad claims.
 
 ## Guardrails
 

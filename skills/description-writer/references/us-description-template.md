@@ -42,7 +42,7 @@ When `patent.yaml` says `pct`, keep this English file and use these Rule 5 block
 
 # Background of the Invention
 
-[Field sentence.] [Publication number] describes [only what the search note says it describes]. That approach leaves [drawback the inventor stated].
+[Field sentence.] [Publication number] describes [only what the search note says it describes]. That approach leaves [drawback the inventor stated]. Do not describe the claimed solution as already known. "Well known" needs a source. Run scripts/admission_scan.py.
 
 # Brief Summary of the Invention
 

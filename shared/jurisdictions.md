@@ -45,8 +45,9 @@ Also expect, when they apply, and do not invent their contents:
 
 - 实质审查请求 (request for substantive examination), within three years from the filing date (专利法 Art. 35)
 - Power of attorney if a 专利代理师 files
-- Genetic-resource source disclosure (遗传资源来源披露) when the invention relies on genetic resources (专利法 Art. 26)
-- A sequence listing in WIPO ST.26 form when the office requires one
+- Genetic-resource source disclosure (遗传资源来源披露) when the invention relies on genetic resources (专利法 Art. 26, paragraph 5; 实施细则 Art. 29)
+- A sequence listing in WIPO ST.26 form when sequences are disclosed. Do not generate the sequences
+- A biological-material deposit when 实施细则 Art. 27 applies. Do not invent an accession number
 - Priority documents when priority is claimed (专利法 Art. 29: 12 months for inventions)
 
 Same-day invention and utility model: 专利法 Art. 9 allows the same applicant
@@ -97,6 +98,14 @@ search and written opinion are not a grant.
 
 Do not put 其特征在于 into a US claim. Do not translate a Chinese two-part
 claim word-for-word into English and call it a US claim.
+
+Unity (单一性) is separate from claim form. CN: 专利法 Art. 31 and
+实施细则 (2023) Art. 39, one or more of the same or corresponding special
+technical features (特定技术特征). US: restriction of independent and
+distinct inventions under 35 U.S.C. § 121. PCT: Rule 13.1 and Rule 13.2.
+`inventive-point-finder` records the split. `claims-drafter` does not
+write one claim set across groups that do not share that feature unless
+the inventor accepts a documented combination.
 
 Product, method (方法), system, and use (用途) claims are all available when
 the facts support them. CN excludes methods of diagnosis and treatment of
@@ -227,9 +236,11 @@ that time limit in the current text before filing. Mark the file
 
 Do not hard-code amounts. They change, and entity status changes them.
 
-- CN: official fee schedule published by CNIPA, from [cnipa.gov.cn](https://www.cnipa.gov.cn).
-- US: USPTO fee schedule, from [uspto.gov](https://www.uspto.gov).
-- PCT: current international fee tables linked from [patentscope.wipo.int](https://patentscope.wipo.int).
+- CN: [Announcement No. 244 (2017)](https://www.cnipa.gov.cn/art/2017/6/20/art_74_27458.html) and [Announcement No. 594 (2024)](https://www.cnipa.gov.cn/art/2024/8/6/art_74_194102.html). Read the table that is in force. Do not copy an amount into the draft.
+- US: [USPTO fee schedule](https://www.uspto.gov/learning-and-resources/fees-and-payment/uspto-fee-schedule), with excess-claim items under 37 CFR 1.16.
+- PCT: [WIPO PCT fee tables](https://www.wipo.int/en/web/pct-system/fees).
+
+`claims-drafter` warns when the claim count may add an excess fee and lists optional fallbacks. It does not impose a claim ceiling.
 
 Official search and document sites used by `prior-art-search`:
 

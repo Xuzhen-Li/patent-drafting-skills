@@ -18,7 +18,8 @@ review the file before filing.
   patent draft", "起草一件PCT".
 
 Do not use it to rewrite a disclosure that already exists. That is
-`invention-disclosure-intake`.
+`invention-disclosure-intake`. Do use the existing-draft steps below
+when the inventor already has files.
 
 ## Inputs (paths) / Preconditions
 
@@ -61,8 +62,27 @@ document-set or grace-period comparison. Templates in this skill's
    answers you were given. Gates stay `false`. `drawings: pending`.
 5. Write `LOG.md` from `references/log-template.md` with the jurisdiction
    choice and who made it.
-6. Hand control back to `patent-orchestrator`. The next skill is
-   `invention-disclosure-intake`.
+6. If the inventor already has drafts, notes, or drawings, copy them
+   before any interview:
+   - Ask them to put the files in a folder they name, or to confirm the
+     files are already in the project.
+   - Copy into `<project>/incoming/` with
+     `scripts/intake_existing.py copy`. The copy is read-only. A second
+     copy does not overwrite. `.DS_Store`, `Thumbs.db`, and `desktop.ini`
+     are ignored. Do not edit the incoming files.
+   - Run `scripts/intake_existing.py score --project <project>` and save
+     the JSON as `<project>/intake_score.json`.
+   - The score says which stage files are real. A filename that contains
+     "complete" is not proof. Drawing images are a finished drawing stage
+     only when `parts_master.json` is frozen and `sheet_manifest.json`
+     matches the PNG bytes. `visual_look.json` is written later by
+     `consistency-checker`.
+   - Do not set a gate to true because a file was copied. The orchestrator
+     starts at `earliest_missing` and does not skip a lock the files do
+     not satisfy.
+7. Hand control back to `patent-orchestrator`. If there were no old
+   drafts, the next skill is `invention-disclosure-intake`. If there
+   were, the next skill is the score's `earliest_missing`.
 
 Do not create claim, description, or abstract drafts "to save time".
 
@@ -87,6 +107,8 @@ a setup choice, not the invention lock.
   07-drawings/
   08-consistency/
   09-package/
+  incoming/            # read-only copies of old drafts, when any
+  intake_score.json    # present only after an existing-draft score
 ```
 
 Empty stage directories may contain a one-line `.gitkeep` if the
@@ -104,6 +126,7 @@ for US and PCT), `applicant`, `inventors`, `field`, `public_disclosure`,
 - [ ] No national ID, passport number, or bank detail was written.
 - [ ] No experimental result, claim, or prior-art citation was invented.
 - [ ] `LOG.md` records the date, the skill name, and the jurisdiction.
+- [ ] Old drafts, if any, are only in `incoming/` as read-only copies, and `intake_score.json` does not mark a gate closed.
 
 ## Guardrails
 

@@ -16,6 +16,7 @@ Scripts:
 - `../claims-drafter/scripts/check_antecedent.py`
 - `../abstract-writer/scripts/check_abstract.py`
 - `scripts/check_numerals.py`
+- `scripts/check_sheets.py`
 
 Gate list: [`../../shared/gates.md`](../../shared/gates.md). Term pairs: [`../../shared/glossary_cn_en.md`](../../shared/glossary_cn_en.md).
 
@@ -29,7 +30,7 @@ Gate list: [`../../shared/gates.md`](../../shared/gates.md). Term pairs: [`../..
 - `04-claims/claims.md`, `04-claims/claim_map.md`
 - `05-description/description.md`, `05-description/support_matrix.md`
 - `06-abstract/abstract.md`
-- `07-drawings/numerals.json` and `07-drawings/figure_list.md`, unless `drawings` is `none`
+- `07-drawings/numerals.json`, `figure_list.md`, `parts_master.json`, `sheet_manifest.json`, and the PNG sheets, unless `drawings` is `none`
 - Report skeleton: [`references/report-template.md`](references/report-template.md)
 
 ## Procedure
@@ -67,10 +68,27 @@ The manifest shape is `{"figures":[{"id":"FIG. 1","numerals":{"10":"housing"}}]}
 - `numeral_multiple_names` — one numeral, two names
 - `name_multiple_numerals` — one name, two numerals
 
-5. Support matrix. For each claim feature, the description row is `supported` only when the same noun and the same relationship appear in 发明内容 or 具体实施方式 (or the US brief summary and detailed description). 专利法第26条第4款; 35 U.S.C. §112(a). A `confirm` row blocks export.
-6. Term pass. One concept, one noun, in the claim, the description, the abstract, and `numerals.json`. Use the glossary for CN/EN pairs. Do not translate inside a single-language filing.
-7. Abstract new-matter pass. Every noun in the abstract already occurs in the description. The abstract does not add a result.
-8. Set the report status to `pass` or `blocked`. `blocked` lists the owner of each open item (inventor or drafter).
+5. Sheets, unless `drawings` is `none`. Open every PNG. Do not pass a sheet you have not opened. Record the look in `07-drawings/visual_look.json`: for each sheet id, `numerals_match_master` and `relationships_seen`. Then run:
+
+```bash
+python3 skills/consistency-checker/scripts/check_sheets.py \
+  --drawings <project>/07-drawings \
+  --look <project>/07-drawings/visual_look.json \
+  --format both
+```
+
+The script decodes each PNG, checks the sha256, and checks black lines on white. A colored pixel or shading fails even if the look file says otherwise. Each relationship in `parts_master.json` must name the figure where it is visible (`visible_on`). Exit 1 until the codes are cleared. Any checksum, unreadable image, or black-on-white failure restarts the whole set: return to `patent-drawings`, rebuild every sheet, and look again. Do not pass the other sheets.
+
+- `checksum_mismatch` — the PNG changed after the manifest
+- `not_black_on_white` / `blank_sheet` — the opened pixels fail
+- `visual_look_missing` / `numeral_look_failed` — nobody confirmed the numerals on that image
+- `relationship_without_figure` / `relationship_not_seen` — a claimed relationship has no figure, or the look did not record it there
+- `image_unreadable` — the file did not open as a PNG
+
+6. Support matrix. For each claim feature, the description row is `supported` only when the same noun and the same relationship appear in 发明内容 or 具体实施方式 (or the US brief summary and detailed description). 专利法第26条第4款; 35 U.S.C. §112(a). A `confirm` row blocks export. Where the claims promise a figure, name that figure. "Somewhere in the drawings" is not enough.
+7. Term pass. One concept, one noun, in the claim, the description, the abstract, and `numerals.json`. Use the glossary for CN/EN pairs. Do not translate inside a single-language filing.
+8. Abstract new-matter pass. Every noun in the abstract already occurs in the description. The abstract does not add a result.
+9. Set the report status to `pass` or `blocked`. `blocked` lists the owner of each open item. Drawing failures are owned by `patent-drawings`.
 
 ## Human gate(s)
 
@@ -89,10 +107,12 @@ The final-package gate (最终文本包) requires this report in `pass` status, 
 - Numeral names match exactly after the script's cleanup (`housing` and `Housing` match; `壳体` and `盖体` do not).
 - The support matrix has no empty feature cells.
 - The abstract length check is exit 0.
+- When drawings exist, `check_sheets.py` was run, every sheet row says `opened=true`, and no relationship lacks a figure.
 
 ## Guardrails
 
 - Do not delete a claim feature or a numeral only to make a script exit 0. Ask which text is wrong: the claim, the description, or the figure.
+- Do not waive a pixel failure from the look file. Return the set to `patent-drawings`.
 - Do not treat a script pass as a legal clearance. The limitations in each script still apply.
 - Do not invent a prior-art citation while "fixing" the background section.
 - Leave the package confidential.

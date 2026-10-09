@@ -7,8 +7,8 @@ CN (A4, SimSun / 宋体)
     权利要求书.docx
     说明书.docx                  paragraph numbers [0001]
     说明书摘要.docx
-    说明书附图.docx              placeholder list of images in 07-drawings/
-    摘要附图.docx                placeholder; uses patent.yaml abstract_figure
+    说明书附图.docx              embeds PNGs from 07-drawings/
+    摘要附图.docx                embeds patent.yaml abstract_figure
 
 US (Letter, Times New Roman, 1.5 line spacing)
     specification.docx           paragraph numbers [0001]
@@ -24,16 +24,21 @@ Inputs under --project
     04-claims/claims.md
     05-description/description.md
     06-abstract/abstract.md
-    07-drawings/                 image files; markdown notes are not listed as figures
+    07-drawings/                 PNG sheets plus sheet_manifest.json
+    07-drawings/sheet_manifest.json
+                                 sha256 for every raster sheet; required when PNGs exist
 
 Exit codes
     0  documents written
+    1  a sheet checksum does not match the manifest, or a sheet is missing from it
     2  missing input, bad arguments, or python-docx is not installed
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import re
 import sys
 from pathlib import Path
@@ -45,7 +50,18 @@ try:
 except ImportError:  # pragma: no cover - tests skip when python-docx is absent
     Document = None
 
-IMAGE_EXT = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".gif", ".bmp", ".emf", ".wmf", ".svg"}
+RASTER_EXT = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".gif", ".bmp"}
+FORBIDDEN_SOURCE_KINDS = {
+    "image_model",
+    "traced",
+    "traced_art",
+    "invented_spectrum",
+    "invented_structure",
+}
+
+
+class ChecksumMismatch(Exception):
+    """A formal sheet no longer matches the manifest that passed review."""
 
 CN_OUTPUTS = (
     "权利要求书.docx",
@@ -103,11 +119,69 @@ def markdown_blocks(text: str) -> list[str]:
     return [block for block in blocks if block]
 
 
-def list_images(drawings: Path) -> list[Path]:
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 16), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def raster_images(drawings: Path) -> list[Path]:
     if not drawings.is_dir():
         return []
-    files = [path for path in drawings.iterdir() if path.is_file() and path.suffix.lower() in IMAGE_EXT]
+    files = [path for path in drawings.iterdir() if path.is_file() and path.suffix.lower() in RASTER_EXT]
     return sorted(files, key=lambda path: path.name.lower())
+
+
+def verify_sheet_checksums(project: Path) -> list[dict]:
+    """Return manifest records whose PNG bytes still match. Raise if any do not.
+
+    SVG and other editable sources are not sheets. Every raster file in
+    07-drawings must appear in sheet_manifest.json, and every manifest image
+    must still be that file.
+    """
+    drawings = project / "07-drawings"
+    images = raster_images(drawings)
+    if not images:
+        return []
+    manifest_path = drawings / "sheet_manifest.json"
+    if not manifest_path.is_file():
+        raise ChecksumMismatch("sheet_manifest.json is missing while 07-drawings contains images")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError as exc:
+        raise ChecksumMismatch(f"sheet_manifest.json is not valid JSON: {exc}") from exc
+    sheets = manifest.get("sheets") if isinstance(manifest, dict) else None
+    if not isinstance(sheets, list):
+        raise ChecksumMismatch("sheet_manifest.json has no sheets list")
+    by_name: dict[str, dict] = {}
+    for sheet in sheets:
+        if not isinstance(sheet, dict):
+            raise ChecksumMismatch("a manifest sheet is not an object")
+        name = str(sheet.get("image") or "")
+        if not name or name in by_name:
+            raise ChecksumMismatch("each sheet needs a unique image name")
+        by_name[name] = sheet
+    image_names = {path.name for path in images}
+    if image_names != set(by_name):
+        differ = ", ".join(sorted(image_names.symmetric_difference(by_name)))
+        raise ChecksumMismatch(f"manifest images and 07-drawings raster files differ: {differ}")
+    verified = []
+    for sheet in sheets:
+        name = str(sheet["image"])
+        path = drawings / name
+        expected = str(sheet.get("sha256") or "").lower()
+        actual = file_sha256(path)
+        if actual != expected:
+            raise ChecksumMismatch(
+                f"checksum mismatch for {name}: manifest {expected} file {actual}"
+            )
+        kind = str(sheet.get("source_kind") or "").lower().replace("-", "_")
+        if kind in FORBIDDEN_SOURCE_KINDS:
+            raise ChecksumMismatch(f"forbidden source for {name}: {kind}")
+        verified.append({"id": str(sheet.get("id") or ""), "image": name, "sha256": actual, "path": path})
+    return verified
 
 
 def _set_run_font(run, jurisdiction: str) -> None:
@@ -186,21 +260,21 @@ def _read(path: Path) -> str:
 
 
 def build_package(project: Path, out_dir: Path, jurisdiction: str) -> list[Path]:
-    if Document is None:
-        raise RuntimeError("python-docx is not installed. Install it with: python3 -m pip install --user python-docx")
     claims_path = project / "04-claims" / "claims.md"
     desc_path = project / "05-description" / "description.md"
     abstract_path = project / "06-abstract" / "abstract.md"
     missing = [str(path.relative_to(project)) for path in (claims_path, desc_path, abstract_path) if not path.is_file()]
     if missing:
         raise FileNotFoundError("Missing required project files: " + ", ".join(missing))
+    verified = verify_sheet_checksums(project)
+    if Document is None:
+        raise RuntimeError("python-docx is not installed. Install it with: python3 -m pip install --user python-docx")
 
     meta = load_simple_yaml(project / "patent.yaml")
     title = meta.get("title", "")
     claims = markdown_blocks(_read(claims_path))
     description = markdown_blocks(_read(desc_path))
     abstract = markdown_blocks(_read(abstract_path))
-    images = list_images(project / "07-drawings")
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
 
@@ -208,12 +282,16 @@ def build_package(project: Path, out_dir: Path, jurisdiction: str) -> list[Path]
         written.append(_save_cn_claims(out_dir, jurisdiction, title, claims))
         written.append(_save_numbered(out_dir / "说明书.docx", jurisdiction, title or "说明书", description))
         written.append(_save_plain(out_dir / "说明书摘要.docx", jurisdiction, "说明书摘要", title, abstract))
-        written.append(_save_cn_drawings(out_dir, jurisdiction, images))
-        written.append(_save_cn_abstract_figure(out_dir, jurisdiction, images, meta.get("abstract_figure", "")))
+        written.append(_save_cn_drawings(out_dir, jurisdiction, verified))
+        written.append(_save_cn_abstract_figure(out_dir, jurisdiction, verified, meta.get("abstract_figure", "")))
     else:
         written.append(_save_numbered(out_dir / "specification.docx", jurisdiction, title or "Specification", description))
         written.append(_save_plain(out_dir / "claims.docx", jurisdiction, "Claims", title, claims))
         written.append(_save_plain(out_dir / "abstract.docx", jurisdiction, "Abstract", title, abstract))
+        if verified:
+            written.append(_save_embedded_drawings(out_dir / "drawings.docx", jurisdiction, "Drawings", verified))
+    if verified:
+        written.append(_write_hash_list(out_dir, verified))
     return written
 
 
@@ -240,54 +318,81 @@ def _save_cn_claims(out_dir: Path, jurisdiction: str, title: str, claims: list[s
     return _save_plain(out_dir / "权利要求书.docx", jurisdiction, "权利要求书", title, claims)
 
 
-def _save_cn_drawings(out_dir: Path, jurisdiction: str, images: list[Path]) -> Path:
-    document = new_document(jurisdiction, "说明书附图")
-    add_paragraph(document, "说明书附图", jurisdiction, None)
-    if not images:
+def _add_picture(document, image: Path, jurisdiction: str) -> None:
+    width = Cm(14) if jurisdiction == "cn" else Inches(6)
+    document.add_picture(str(image), width=width)
+
+
+def _append_hashes(document, jurisdiction: str, verified: list[dict]) -> None:
+    add_paragraph(document, "sha256", jurisdiction, None)
+    for sheet in verified:
+        label = sheet["id"] or sheet["image"]
+        add_paragraph(document, f"{label} {sheet['image']} {sheet['sha256']}", jurisdiction, None)
+
+
+def _save_embedded_drawings(path: Path, jurisdiction: str, heading: str, verified: list[dict]) -> Path:
+    document = new_document(jurisdiction, heading)
+    add_paragraph(document, heading, jurisdiction, None)
+    for index, sheet in enumerate(verified, start=1):
+        caption = sheet["id"] or (f"图{index}" if jurisdiction == "cn" else f"FIG. {index}")
+        add_paragraph(document, f"{caption}    {sheet['image']}", jurisdiction, None)
+        _add_picture(document, sheet["path"], jurisdiction)
+    _append_hashes(document, jurisdiction, verified)
+    document.save(path)
+    return path
+
+
+def _write_hash_list(out_dir: Path, verified: list[dict]) -> Path:
+    payload = {
+        "sheets": [{"id": sheet["id"], "image": sheet["image"], "sha256": sheet["sha256"]} for sheet in verified]
+    }
+    path = out_dir / "sheet_hashes.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
+def _save_cn_drawings(out_dir: Path, jurisdiction: str, verified: list[dict]) -> Path:
+    if not verified:
+        document = new_document(jurisdiction, "说明书附图")
+        add_paragraph(document, "说明书附图", jurisdiction, None)
         add_paragraph(
             document,
             "【待发明人确认】07-drawings/ 中尚未放入附图文件。",
             jurisdiction,
             None,
         )
-    else:
-        add_paragraph(
-            document,
-            "以下为附图占位清单。正式图样以 07-drawings/ 中的图像文件为准。",
-            jurisdiction,
-            None,
-        )
-        for index, image in enumerate(images, start=1):
-            add_paragraph(document, f"图{index}    {image.name}", jurisdiction, None)
-    path = out_dir / "说明书附图.docx"
-    document.save(path)
-    return path
+        path = out_dir / "说明书附图.docx"
+        document.save(path)
+        return path
+    return _save_embedded_drawings(out_dir / "说明书附图.docx", jurisdiction, "说明书附图", verified)
 
 
-def _save_cn_abstract_figure(out_dir: Path, jurisdiction: str, images: list[Path], chosen: str) -> Path:
+def _save_cn_abstract_figure(out_dir: Path, jurisdiction: str, verified: list[dict], chosen: str) -> Path:
     document = new_document(jurisdiction, "摘要附图")
     add_paragraph(document, "摘要附图", jurisdiction, None)
-    names = {image.name for image in images}
+    by_name = {sheet["image"]: sheet for sheet in verified}
     if chosen:
         add_paragraph(document, f"指定摘要附图：{chosen}", jurisdiction, None)
-        if chosen not in names:
+        sheet = by_name.get(chosen)
+        if sheet is None:
             add_paragraph(
                 document,
-                "【待发明人确认】未在 07-drawings/ 中找到该文件。",
+                "【待发明人确认】未在已校验的附图中找到该文件。",
                 jurisdiction,
                 None,
             )
-    else:
+        else:
+            _add_picture(document, sheet["path"], jurisdiction)
+            _append_hashes(document, jurisdiction, [sheet])
+    elif verified:
         add_paragraph(
             document,
             "【待发明人确认】请从下列附图中选择一幅作为摘要附图。",
             jurisdiction,
             None,
         )
-    if images:
-        add_paragraph(document, "可用附图：", jurisdiction, None)
-        for image in images:
-            add_paragraph(document, image.name, jurisdiction, None)
+        for sheet in verified:
+            add_paragraph(document, sheet["image"], jurisdiction, None)
     else:
         add_paragraph(document, "【待发明人确认】07-drawings/ 中尚未放入附图文件。", jurisdiction, None)
     path = out_dir / "摘要附图.docx"
@@ -312,6 +417,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     try:
         written = build_package(args.project, args.out, args.jurisdiction)
+    except ChecksumMismatch as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     except FileNotFoundError as exc:
         print(str(exc), file=sys.stderr)
         return 2

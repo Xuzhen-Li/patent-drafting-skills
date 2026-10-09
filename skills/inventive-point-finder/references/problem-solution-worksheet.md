@@ -108,6 +108,24 @@ Broadest first. Every feature must already be in the disclosure.
 | 0 (broadest) | | | | |
 | 1 | | | | |
 
+## 7a. Unity / 单一性
+
+Read `references/unity.md`. One row per candidate invention.
+
+| Group | Feature IDs | Special technical feature they share, or "none" | Keep in this application? |
+|-------|-------------|--------------------------------------------------|---------------------------|
+| A | | | |
+
+CN: 专利法 Art. 31; 实施细则 (2023) Art. 39, 特定技术特征.
+US: restriction under 35 U.S.C. § 121. Not a CN unity holding.
+PCT: Rule 13.1 and 13.2.
+
+`unity_decision:` `one-invention` | `documented-combination` | `split-pending`
+
+Shared special technical feature, if the inventor accepts a combination:
+
+Quoted acceptance:
+
 ## 8. Lock / 锁定
 
 The inventor locks the ranking and the fallback order, not the claims.

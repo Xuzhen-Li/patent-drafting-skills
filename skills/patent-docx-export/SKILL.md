@@ -23,8 +23,8 @@ This produces a drafting package. It does not file the application and it does n
 - `04-claims/claims.md`
 - `05-description/description.md`
 - `06-abstract/abstract.md`
-- `07-drawings/` image files (png, jpg, tif, gif, bmp, svg). Markdown notes in that folder are not listed as figures.
-- A clean `08-consistency/report.md`.
+- `07-drawings/` PNG sheets and `07-drawings/sheet_manifest.json`. Markdown notes and editable sources are not sheets.
+- A clean `08-consistency/report.md`, including a passing sheet check when drawings exist.
 
 ## Procedure
 
@@ -42,11 +42,11 @@ python3 skills/patent-docx-export/scripts/build_docx.py \
 
 The script flag is lowercase `cn`, `us`, or `pct`. `patent.yaml` stores `CN`, `US`, or `PCT`; pass the lowercase form of that field. `--jurisdiction us` writes the English trio on Letter paper. `--jurisdiction pct` writes the same English file names on A4 (PCT Rule 11).
 
-5. Open each file and check the items in the layout note: page size, font, paragraph numbers, and the CN drawing list.
-6. CN 说明书附图 and 摘要附图 are placeholders that name the image files. They do not replace line drawings prepared under `patent-drawings`.
-7. Record the output paths and the consistency-report status in `LOG.md`.
+5. The script recomputes each PNG sha256 and compares it with `sheet_manifest.json`. It embeds those images. It does not redraw them and it does not swap in a different file. Exit 1 if any checksum differs, if a raster file is missing from the manifest, or if a sheet is marked with a forbidden source. Nothing is written in that case. Rebuild the set in `patent-drawings` and rerun consistency before trying again.
+6. Open each file and check the items in the layout note: page size, font, paragraph numbers, and that the CN drawing file shows the embedded image rather than a filename list alone.
+7. Record the output paths, the consistency-report status, and the sheet hashes in `LOG.md`.
 
-Exit 0: files written. Exit 2: missing project files, missing directory, or python-docx is not installed.
+Exit 0: files written. Exit 1: checksum mismatch. Exit 2: missing project files, missing directory, or python-docx is not installed.
 
 ## Human gate(s)
 
@@ -60,13 +60,16 @@ CN, in `--out`:
 - `说明书.docx`
 - `说明书摘要.docx`
 - `说明书附图.docx`
-- `摘要附图.docx`
+- `摘要附图.docx` — embeds `abstract_figure` when that file passed the checksum
+- `sheet_hashes.json` — sha256 of each embedded sheet
 
 US, in `--out`:
 
 - `specification.docx`
 - `claims.docx`
 - `abstract.docx`
+- `drawings.docx` when `07-drawings/` has PNG sheets
+- `sheet_hashes.json` when those sheets were embedded
 
 PCT uses the US file names and A4 page size.
 
@@ -76,8 +79,9 @@ PCT uses the US file names and A4 page size.
 - CN pages are A4. US pages are Letter. PCT pages are A4.
 - CN body font is SimSun for Latin runs and 宋体 for East Asian runs. US/PCT body font is Times New Roman.
 - Every claim sentence from `claims.md` is present. No claim was shortened for layout.
-- The CN drawing list names every image in `07-drawings/` and does not name `figure_list.md`.
-- `abstract_figure` appears in `摘要附图.docx`.
+- The CN drawing file embeds every PNG in the manifest and does not name `figure_list.md` as a figure.
+- `abstract_figure` is embedded in `摘要附图.docx`, and its sha256 matches the manifest.
+- `sheet_hashes.json` matches the embedded files.
 - `【待发明人确认】` and `[INVENTOR TO CONFIRM]` are still visible, not deleted at export.
 
 ## Guardrails
@@ -85,6 +89,7 @@ PCT uses the US file names and A4 page size.
 - Do not file, pay a fee, or submit to CNIPA, USPTO, or a receiving Office from this skill.
 - Do not drop a section to make the document shorter.
 - Do not renumber claims during export.
+- Do not replace a sheet at export time. A checksum mismatch stops the build.
 - If SimSun and 宋体 are not installed on the reading computer, install a Songti-compatible font (Songti SC or Noto Serif CJK SC). The file stores the font names; it does not embed the font.
 - The package remains confidential. Public disclosure before filing can destroy novelty (专利法第24条; 35 U.S.C. §102(b)(1)).
 

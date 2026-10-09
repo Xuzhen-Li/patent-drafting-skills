@@ -43,24 +43,24 @@ flowchart TD
   g5 -->|yes| counsel["提交前由专利代理师审阅"]
 ```
 
-`patentability-screen` 在客体被排除时可以停住流程。只有当你确认附图对理解发明并非必要时，才可以把 `drawings` 记为 `none` 并跳过 `patent-drawings`。一致性核对未通过时，不得进入导出。
+`patentability-screen` 在客体被排除时可以停住流程。只有当你确认附图对理解发明并非必要时，才可以把 `drawings` 记为 `none` 并跳过 `patent-drawings`。单一性拆开时，先回到发明点技能，不写一套混在一起的权利要求。附图的视觉检查或校验和失败时，回到 `patent-drawings`。导出把附图嵌进 Word；校验和变了就停止。
 
 ## 技能
 
 | # | 技能 | 做什么 | 主要产出 |
 |---|------|--------|----------|
 | 0 | `patent-orchestrator` | 进度、路由、闸门、管辖切换 | 状态报告 |
-| 1 | `patent-project-setup` | 建立项目目录、`patent.yaml` 和空白交底书 | `patent.yaml`、`00-disclosure/disclosure_form.md` |
-| 2 | `invention-disclosure-intake` | 访谈并写成交底书；发明锁定 | `00-disclosure/disclosure.md` |
+| 1 | `patent-project-setup` | 建立项目目录；已有草稿时只读复制并标出最早的真实缺口 | `patent.yaml`、`incoming/`、`intake_score.json` |
+| 2 | `invention-disclosure-intake` | 访谈；每项特征和效果标注来源与证据等级；发明锁定 | `00-disclosure/disclosure.md`、`fact_ledger.md` |
 | 3 | `patentability-screen` | 客体筛查（中国专利法第二条、第五条、第二十五条；美国 § 101）。中国案比较发明与实用新型 | `01-eligibility/screen.md` |
-| 4 | `prior-art-search` | 在真实数据库检索，保留 10–20 篇文献和特征矩阵；检索复核 | `02-prior-art/search_log.md`、`feature_matrix.csv` |
-| 5 | `inventive-point-finder` | 三步法或美国 § 103，排序发明点与退路；发明点锁定 | `03-inventive-points/inventive_points.md` |
-| 6 | `claims-drafter` | 独立权利要求与从属权利要求；中国两部分写法或美国写法；权利要求锁定 | `04-claims/claims.md` |
-| 7 | `description-writer` | 中国说明书五部分，或符合 37 CFR 1.77 的美国说明书 | `05-description/description.md` |
+| 4 | `prior-art-search` | 真实数据库检索、特征矩阵，以及是否有单篇文献公开了全部必要特征 | `02-prior-art/search_log.md`、`feature_matrix.csv` |
+| 5 | `inventive-point-finder` | 三步法或美国 § 103；按特定技术特征做单一性；不用未验证的效果 | `03-inventive-points/inventive_points.md` |
+| 6 | `claims-drafter` | 先写引用关系草图再写权利要求；一项发明或经记载的组合；官费提醒，不设条数上限 | `04-claims/claims.md` |
+| 7 | `description-writer` | 说明书、领域清单、背景自认检查、超出交底的句子、生物技术提醒 | `05-description/description.md` |
 | 8 | `abstract-writer` | 中国摘要不超过 300 字，或美国摘要不超过 150 个单词 | `06-abstract/abstract.md` |
-| 9 | `patent-drawings` | 附图清单、附图标记、中美 PCT 附图规则 | `07-drawings/figure_list.md` |
-| 10 | `consistency-checker` | 核对权利要求、说明书、附图和摘要 | `08-consistency/report.md` |
-| 11 | `patent-docx-export` | 申请格式的 Word 文件；最终文本包闸门 | `09-package/*.docx` |
+| 9 | `patent-drawings` | 先冻结零部件总表，正式图来自可编辑源，每张图一个 sha256 | `07-drawings/parts_master.json`、`sheet_manifest.json` |
+| 10 | `consistency-checker` | 打开每一张图；检查黑白线条，以及每项关系画在哪一张图上 | `08-consistency/report.md` |
+| 11 | `patent-docx-export` | Word 中嵌入附图；校验和变了就失败 | `09-package/*.docx` |
 
 技能 0–5 把想法收到锁定的发明点。技能 6–11 把锁定结果写成申请文件。全套规格见 [docs/DESIGN.md](docs/DESIGN.md)。
 
@@ -132,6 +132,7 @@ PCT：
   07-drawings/
   08-consistency/
   09-package/
+  incoming/          已有草稿的只读副本（有则建立）
   LOG.md
 ```
 
@@ -169,7 +170,7 @@ PCT：
 1. 不编造实验数据、技术效果或实施例。不知道就标出来。
 2. 权利要求中的每一项特征都要能在说明书中找到依据（专利法第二十六条第四款；35 U.S.C. § 112(a)）。
 3. 先引基础：后文的「所述 / the / said」必须先有「一种 / a」。
-4. 说明书和附图中的附图标记一一对应。
+4. 说明书和附图中的附图标记一一对应。正式附图是可编辑源导出的 PNG，每张图有 sha256。导出嵌入这些字节，哈希变了就停止。
 5. 现有技术必须是能够打开的真实文献，带公开号和链接。
 6. 动笔前先问公开情况。中美 PCT 的宽限期不能互相替代。
 7. 人类闸门：发明锁定、检索复核、发明点锁定、权利要求锁定、最终文本包。智能体不能自己合上闸门。最终闸门只表示草稿内部完整，提交前仍要由代理人审阅。

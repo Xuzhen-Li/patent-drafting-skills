@@ -27,6 +27,8 @@ are filling. This checklist is the order of questions, not a second template.
    size, time, pH, voltage, cultivar, model number)? Which are still open?
 9. What result did you see, against which control, on which date or in
    which notebook or figure? If you have not run it, say "not run".
+   Grade each effect `measured`, `experienced`, `directly-inferable`,
+   or `unverified`.
 10. What else did you try that failed?
 11. What could be swapped (material, order, instrument), and did you try the swap?
 12. Which figures can you provide, and which reference signs do you want?
@@ -43,6 +45,13 @@ are filling. This checklist is the order of questions, not a second template.
 17. Genetic resources, human or clinical data you cannot publish, or a
     sequence that may need a sequence listing?
 18. Is there anything you do not want in the broadest claim concept?
+
+## Origin of each fact
+
+For every feature and effect, record one origin in `fact_ledger.md`:
+`user-confirmed`, `copied-from-file`, `summarized`, `suggested`, or
+`open`. If you proposed the feature, the tag is `suggested` until the
+inventor adopts it. Do not leave the origin column blank.
 
 ## Lock
 

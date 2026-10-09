@@ -44,6 +44,16 @@ Numbers or titles that could not be opened. They are not prior art in the matrix
 | Lead | Why it is unverified |
 |------|----------------------|
 
+## Single-document novelty screen
+
+Not an allowance opinion. In-force claims were not reviewed. This is not a freedom-to-operate opinion.
+
+Essential feature IDs:
+Any one opened document shows every essential feature? yes / no / unknown
+If yes, publication number:
+If unknown, which essential cells are still `unknown`:
+Combination of documents: not decided in this log.
+
 ## Closest document
 
 Publication number:

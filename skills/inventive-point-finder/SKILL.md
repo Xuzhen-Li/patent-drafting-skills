@@ -44,9 +44,11 @@ one is missing, reopen search. Do not cite it from memory.
 3. List distinguishing technical features (区别技术特征): features in
    the candidate invention that the closest document does not disclose.
    Use the matrix. A cell of `unknown` cannot support a distinction.
-4. Attach effects. Use only effects written in the disclosure with a
-   source. If the inventor hopes for an effect, it is not an effect in
-   this worksheet. Write "no supported effect" and lower the rank.
+4. Attach effects from `00-disclosure/fact_ledger.md`. Use a grade of
+   `measured`, `experienced`, or `directly-inferable` only. Ignore
+   `unverified`. Do not promote it because it would help the argument.
+   If every effect on a feature is unverified, write "no supported
+   effect" and lower the rank.
 5. Apply the legal test that matches the file. Do not mix them into one
    conclusion.
    - **CN — 三步法** (审查指南 Part II Chapter 4). (1) Closest prior art.
@@ -73,7 +75,18 @@ one is missing, reopen search. Do not cite it from memory.
 7. Fallback positions, broadest first: which feature moves into the
    independent concept, which stays dependent, which is only an
    embodiment. Every fallback feature must already be in the disclosure.
-8. Lock only on `发明人确认发明点` or `I confirm the inventive-point lock`.
+8. Unity (单一性). Read `references/unity.md` and fill worksheet section
+   7a. Separate candidate inventions that do not share one special
+   technical feature (特定技术特征). Do not force unrelated themes into
+   one application. Write one line:
+   `unity_decision: one-invention`, `documented-combination`, or
+   `split-pending`. A documented combination names the shared special
+   technical feature and quotes the inventor's acceptance. CN uses
+   专利法 Art. 31 and 实施细则 (2023) Art. 39. US restriction practice is
+   35 U.S.C. § 121. PCT unity is Rule 13. Do not mix those holdings.
+9. Lock only on `发明人确认发明点` or `I confirm the inventive-point lock`,
+   and only when `unity_decision` is `one-invention` or
+   `documented-combination`. `split-pending` stays unlocked.
    Set `gates.inventive_point_lock` to `true` and quote the approval in
    `LOG.md`. If the closest document is still disputed, do not lock.
 
@@ -96,7 +109,8 @@ Do not create `04-claims/claims.md`.
 - [ ] The closest prior art is one row in the search log, with a URL.
 - [ ] Every distinguishing feature is a matrix cell of `no` or `partial`, not `unknown`.
 - [ ] The objective technical problem does not recite the solution.
-- [ ] No effect appears that the disclosure does not support.
+- [ ] No effect appears whose ledger grade is `unverified` or whose disclosure source is missing.
+- [ ] Section 7a separates groups that do not share one 特定技术特征, and `unity_decision` is set.
 - [ ] CN files use the 三步法; US files use § 103; a US file does not end on "therefore inventive step".
 - [ ] Fallbacks are ordered and each one points at a disclosure section.
 - [ ] The lock quote is in `LOG.md` if the flag is true.
@@ -104,6 +118,7 @@ Do not create `04-claims/claims.md`.
 ## Guardrails
 
 - Do not upgrade `partial` to `no` to manufacture a distinction.
+- Do not use an `unverified` effect, and do not hide a second invention inside one claim concept.
 - Do not argue "no teaching, suggestion, or motivation" unless you read the references you are talking about.
 - Do not invent a comparative example or an unexpected result.
 - Do not tell the inventor to delete a close reference from the log.

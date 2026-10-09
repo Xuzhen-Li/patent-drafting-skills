@@ -10,7 +10,7 @@ Dependency defects
     (a) a claim cites a number that does not exist, or cites itself or a later claim
     (b) a multiple-dependent claim (two or more parents) is not in the alternative,
         or it depends on another multiple-dependent claim
-        CN: 择一引用 uses 或 / 任一项 / 之一; 多项从属权利要求不得作为另一项
+        CN: 实施细则第25条. 择一引用 uses 或 / 任一项 / 之一; 多项从属权利要求不得作为另一项
         多项从属权利要求的基础
         US / PCT: the same structure is required by 35 U.S.C. §112(e),
         37 CFR 1.75(c), and PCT Rule 6.4
@@ -518,7 +518,7 @@ def analyze_text(text: str, lang: str = "auto", filename: str | None = None) -> 
                     (
                         f"Claim {claim['number']} refers to more than one claim but not in the alternative. "
                         "Use 或/任一项 in Chinese or 'or'/'any one of' in English "
-                        "(专利法实施细则中的择一引用; 35 U.S.C. §112(e); 37 CFR 1.75(c); PCT Rule 6.4)."
+                        "(专利法实施细则第25条的择一引用; 35 U.S.C. §112(e); 37 CFR 1.75(c); PCT Rule 6.4)."
                     ),
                     refs=list(claim["deps"]),
                 )
@@ -539,7 +539,7 @@ def analyze_text(text: str, lang: str = "auto", filename: str | None = None) -> 
                             f"Claim {claim['number']} is multiple-dependent and depends from "
                             f"multiple-dependent claim {shown}. "
                             "A multiple-dependent claim must not serve as the basis of another "
-                            "multiple-dependent claim (多项从属权利要求不得作为另一项多项从属权利要求的基础; "
+                            "multiple-dependent claim (专利法实施细则第25条; 多项从属权利要求不得作为另一项多项从属权利要求的基础; "
                             "35 U.S.C. §112(e); 37 CFR 1.75(c); PCT Rule 6.4)."
                         ),
                         parents=multi_parents,

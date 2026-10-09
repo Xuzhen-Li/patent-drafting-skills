@@ -23,6 +23,7 @@ often use "the", with the same antecedent-basis rule.
 | 必要技术特征 | essential technical feature | Belongs in the independent claim if it is essential to solve the stated problem |
 | 附加技术特征 | additional technical feature | Typical dependent-claim material |
 | 区别技术特征 | distinguishing technical feature | Features not in the closest prior art |
+| 特定技术特征 | special technical feature | The contribution over the prior art that unity requires. 实施细则 (2023) Art. 39; PCT Rule 13.2 |
 | 现有技术 | prior art | CN: known to the public anywhere before the filing date |
 | 最接近的现有技术 | closest prior art | Starting point of the 三步法 |
 | 抵触申请 | conflicting application | Earlier-filed, later-published application by anyone; novelty only |
@@ -76,7 +77,7 @@ often use "the", with the same antecedent-basis rule.
 | 得到说明书支持 | supported by the description | 专利法 Art. 26, paragraph 4; PCT Article 6 |
 | 清楚 | clarity | |
 | 简要 | conciseness | |
-| 单一性 | unity of invention | PCT Rule 13 |
+| 单一性 | unity of invention | 专利法 Art. 31; 实施细则 (2023) Art. 39 (特定技术特征); 35 U.S.C. § 121 restriction; PCT Rule 13 |
 | 修改 | amendment | |
 | 超范围修改 | added matter | Amendment beyond the original disclosure |
 | 分案申请 | divisional application | |
@@ -90,8 +91,8 @@ often use "the", with the same antecedent-basis rule.
 | 职务发明 | service invention | 专利法 Art. 6; employer is often the applicant |
 | 诚实信用原则 | principle of good faith | 专利法 Art. 20 |
 | 信息披露义务 | duty of disclosure | 37 CFR 1.56 in the US |
-| 遗传资源 | genetic resource | Source disclosure under 专利法 Art. 26 |
-| 序列表 | sequence listing | WIPO ST.26 where the office requires it |
+| 遗传资源 | genetic resource | Source disclosure: 专利法 Art. 26, paragraph 5; 实施细则 (2023) Art. 29 |
+| 序列表 | sequence listing | WIPO ST.26. Do not generate sequences the inventor did not supply |
 | 方法权利要求 | process claim; method claim | |
 | 产品权利要求 | product claim | |
 | 用途权利要求 | use claim | Check CN exclusions for medical methods |
@@ -124,4 +125,4 @@ often use "the", with the same antecedent-basis rule.
 | 最早优先权 | earliest priority | |
 | 同日申请 | same-day filing | Invention plus utility model under 专利法 Art. 9 |
 | 提前公开 | early publication | 专利法 Art. 34, on request |
-| 微生物保藏 | deposit of biological material | Budapest Treaty system; flag for counsel, do not invent an accession number |
+| 微生物保藏 | deposit of biological material | 实施细则 (2023) Art. 27; Budapest Treaty depositories may qualify. Do not invent an accession number |

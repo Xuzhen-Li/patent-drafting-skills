@@ -25,7 +25,8 @@ Stage files
   04 claims:         present | missing
   05 description:    present | missing
   06 abstract:       present | missing
-  07 drawings:       present | none-declared | missing
+  07 drawings:       present | none-declared | missing | not-visually-checked
+  unity decision:    one-invention | documented-combination | split-pending | missing
   08 consistency:    pass | fail | missing
   09 package:        present | missing
 

@@ -69,11 +69,18 @@ Databases, official sites only:
    after `ours` are publication numbers. Cell values are only `yes`,
    `partial`, `no`, or `unknown`. `no` means you looked and the feature
    was not there. Unread text is `unknown`.
-8. Ask the inventor to review. Prior-art review (G2) closes only on
+8. Single-document novelty line, in the search log. Say whether any one
+   opened document shows every essential feature. Novelty, on this
+   screen, fails only in that case. If a cell on an essential feature is
+   still `unknown`, the answer is `unknown`, not `no`. Do not analyze a
+   combination here. That stays in `inventive-point-finder`. Add one
+   sentence: in-force claims were not reviewed. This is not a
+   freedom-to-operate opinion and not an allowance opinion.
+9. Ask the inventor to review. Prior-art review (G2) closes only on
    `发明人确认检索结果` or `I confirm the prior-art review`. Then set
    `gates.prior_art_review` to `true` and quote the approval in `LOG.md`.
-9. Hand the closest one or two documents to the next skill by naming them
-   in the log. Do not run the 三步法 here.
+10. Hand the closest one or two documents to the next skill by naming them
+    in the log. Do not run the 三步法 here.
 
 ## Human gate(s)
 
@@ -100,6 +107,8 @@ and is verified only if you opened it. Do not invent a DOI.
 - [ ] Queries are copied as run, including the database name and the date.
 - [ ] Hit counts are the counts the database showed, not estimates.
 - [ ] IPC/CPC symbols are traced to a page you opened or a symbol copied from a retrieved document.
+- [ ] The log says whether any single opened document shows every essential feature.
+- [ ] The log says in-force claims were not reviewed.
 - [ ] The inventor's own admitted papers are in the log even if they are not patents.
 - [ ] Language of the log narrative matches the project. Publication titles stay in the original language.
 

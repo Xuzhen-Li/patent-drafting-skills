@@ -46,18 +46,26 @@ ask the inventor to repeat a date they already gave. Still confirm it.
 3. Write `00-disclosure/disclosure.md` in Chinese for `CN`, English for
    `US` and `PCT`. Keep the form's section order. Under each effect, name
    the control and the source, or write that the effect is unquantified.
-4. Build a gap list at the top of the file: every `【待发明人确认】` or
-   `[INVENTOR TO CONFIRM]`, one line each.
-5. Show the draft. Ask whether the essential-feature column is right.
-   Do not proceed to prior-art search inside this skill.
-6. Invention lock, only if the inventor explicitly says `发明人确认锁定交底`
+4. Write `00-disclosure/fact_ledger.md` from `references/fact-ledger.md`.
+   Every feature and every effect gets an origin tag: `user-confirmed`,
+   `copied-from-file`, `summarized`, `suggested`, or `open`. Every effect
+   also gets an evidence grade: `measured`, `experienced`,
+   `directly-inferable`, or `unverified`. A `suggested` row stays out of
+   later claims until the inventor changes it to `user-confirmed`.
+   Do not upgrade `unverified`.
+5. Build a gap list at the top of the file: every `【待发明人确认】` or
+   `[INVENTOR TO CONFIRM]`, one line each. Include `open` and `suggested`
+   ledger rows.
+6. Show the draft. Ask whether the essential-feature column and the
+   origin tags are right. Do not proceed to prior-art search inside this skill.
+7. Invention lock, only if the inventor explicitly says `发明人确认锁定交底`
    or `I confirm the invention lock` (or a clear equivalent you quote):
    - Set `gates.invention_lock` to `true` in `patent.yaml`.
    - Append `LOG.md` with the date, this skill's name, the quoted approval,
      and the disclosure filename.
    - If essential sections 4, 5, or 11 are still entirely blank, do not
      lock. Say which section is empty.
-7. If the inventor wants changes, edit and leave the gate `false` until
+8. If the inventor wants changes, edit and leave the gate `false` until
    they lock again.
 
 Unknown patent numbers the inventor "thinks they have seen" go under
@@ -76,6 +84,8 @@ patentability.
 
 - `<project>/00-disclosure/disclosure.md` — filled disclosure, same headings
   as the blank form, gap list at the top.
+- `<project>/00-disclosure/fact_ledger.md` — origin tag and evidence grade
+  for each feature and effect.
 - `<project>/patent.yaml` — `gates.invention_lock: true` only after approval.
   Also update `public_disclosure` if the interview established it.
 - `<project>/LOG.md` — append one entry on lock or on a refusal to lock.
@@ -86,7 +96,8 @@ Do not write `01-eligibility/`, `02-prior-art/`, or `04-claims/`.
 
 - [ ] No number, effect, or embodiment appears that the inventor did not supply.
 - [ ] Essential and optional features are separated.
-- [ ] Each claimed effect has a control and a source, or is marked unconfirmed.
+- [ ] Each feature has an origin tag. Each effect has an evidence grade.
+- [ ] Each claimed effect has a control and a source, or is `unverified`.
 - [ ] Disclosure history is a filled table, not "N/A" by assumption.
 - [ ] Inventorship is tied to conception of a feature, not to author order.
 - [ ] Language matches `patent.yaml` `language`.

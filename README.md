@@ -67,24 +67,27 @@ flowchart TD
 `patentability-screen` can stop the flow when the subject matter is
 excluded. `patent-drawings` can be skipped only when you record
 `drawings: none` because figures are not needed to understand the
-invention. A failed consistency report sends the draft back before export.
+invention. A unity split goes back to the inventive-point skill before
+any single claim set is written. A sheet that fails the visual check or
+the checksum goes back to `patent-drawings`. Export embeds those sheets
+and stops if a checksum no longer matches.
 
 ## Skills
 
 | # | Skill | What it does | Main output |
 |---|-------|----------------|-------------|
 | 0 | `patent-orchestrator` | Status, routing, gates, jurisdiction switch | Status report |
-| 1 | `patent-project-setup` | Create the project tree, `patent.yaml`, and a blank disclosure form | `patent.yaml`, `00-disclosure/disclosure_form.md` |
-| 2 | `invention-disclosure-intake` | Interview you and write the disclosure; invention lock | `00-disclosure/disclosure.md` |
+| 1 | `patent-project-setup` | Create the project tree and, when old drafts exist, copy them read-only and score the earliest real gap | `patent.yaml`, `incoming/`, `intake_score.json` |
+| 2 | `invention-disclosure-intake` | Interview you; origin tag and evidence grade on each feature and effect; invention lock | `00-disclosure/disclosure.md`, `fact_ledger.md` |
 | 3 | `patentability-screen` | Eligibility (CN Arts. 2, 5, 25; US § 101). CN: invention vs utility model | `01-eligibility/screen.md` |
-| 4 | `prior-art-search` | Real database searches, 10–20 documents, feature matrix; prior-art review | `02-prior-art/search_log.md`, `feature_matrix.csv` |
-| 5 | `inventive-point-finder` | 三步法 or US § 103, ranked points and fallbacks; inventive-point lock | `03-inventive-points/inventive_points.md` |
-| 6 | `claims-drafter` | Independent and dependent claims; CN two-part form or US style; claim-set lock | `04-claims/claims.md` |
-| 7 | `description-writer` | CN five-part description, or a US specification under 37 CFR 1.77 | `05-description/description.md` |
+| 4 | `prior-art-search` | Real database searches, feature matrix, and whether one document shows every essential feature | `02-prior-art/search_log.md`, `feature_matrix.csv` |
+| 5 | `inventive-point-finder` | 三步法 or US § 103; unity on a special technical feature; unverified effects left out | `03-inventive-points/inventive_points.md` |
+| 6 | `claims-drafter` | Dependency sketch before sentences; one invention or a documented combination; fee warning, no claim ceiling | `04-claims/claims.md` |
+| 7 | `description-writer` | Description, domain checklist, background admission pass, added-matter list, biology reminders | `05-description/description.md` |
 | 8 | `abstract-writer` | CN abstract ≤ 300 characters, or US abstract ≤ 150 words | `06-abstract/abstract.md` |
-| 9 | `patent-drawings` | Figure list, reference signs, CN/US/PCT drawing rules | `07-drawings/figure_list.md` |
-| 10 | `consistency-checker` | Claims, description, drawings, and abstract cross-check | `08-consistency/report.md` |
-| 11 | `patent-docx-export` | Filing-format Word files; final package gate | `09-package/*.docx` |
+| 9 | `patent-drawings` | Frozen parts master, editable-source sheets, sha256 per sheet | `07-drawings/parts_master.json`, `sheet_manifest.json` |
+| 10 | `consistency-checker` | Opens each sheet; black-on-white and which figure shows each relationship | `08-consistency/report.md` |
+| 11 | `patent-docx-export` | Word files with the sheets embedded; export fails if a checksum changed | `09-package/*.docx` |
 
 Skills 0–5 are the path from an idea to a locked inventive point. Skills
 6–11 turn that lock into filing documents. The spec for the whole suite
@@ -172,6 +175,7 @@ their own folders.
   07-drawings/
   08-consistency/
   09-package/
+  incoming/          read-only copies of old drafts, when any
   LOG.md
 ```
 
@@ -214,7 +218,7 @@ The skills do not hard-code fee amounts.
 1. Never invent experimental data, effects, or embodiments. Unknowns stay marked.
 2. Every claim feature must be supported by the description (专利法 Art. 26, paragraph 4; 35 U.S.C. § 112(a)).
 3. Antecedent basis: 所述 / "the" / "said" needs an earlier 一种 / "a".
-4. Reference signs in the description and the drawings match one-to-one.
+4. Reference signs in the description and the drawings match one-to-one. Formal sheets are PNG exports of an editable source, each with a sha256. Export embeds those bytes and stops if the hash changed.
 5. Prior-art citations are real documents with publication numbers and links.
 6. Ask about public disclosure before drafting. Grace periods are not interchangeable across CN, US, and PCT.
 7. Human gates: invention lock, prior-art review, inventive-point lock, claim-set lock, final package. The agent cannot close a gate by itself. The final gate means the draft is internally complete. It still needs counsel before filing.

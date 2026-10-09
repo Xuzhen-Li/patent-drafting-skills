@@ -49,7 +49,8 @@ discussion of one paragraph as approval of the whole document.
 Exit criteria:
 
 - Technical problem, existing solutions and their real drawbacks, the solution, and which features are essential versus optional are written in the inventor's facts.
-- Every effect has a source (experiment, observation, or design calculation) or is marked `【待发明人确认】` / `[INVENTOR TO CONFIRM]`.
+- Every feature in `00-disclosure/fact_ledger.md` has an origin tag (`user-confirmed`, `copied-from-file`, `summarized`, `suggested`, or `open`). A `suggested` feature is not an essential feature.
+- Every effect has an evidence grade (`measured`, `experienced`, `directly-inferable`, or `unverified`) and a source, or it stays `unverified`.
 - Public disclosures are listed with dates, or the inventor states there are none.
 - Applicant and inventors are identified, or the employment question is explicitly open.
 - No fabricated examples, numbers, or figures.
@@ -72,6 +73,7 @@ Exit criteria:
 - Every retained document has a publication number and a link the inventor or the agent opened. Nothing is cited from memory alone.
 - The matrix covers the candidate essential features. Empty cells that were not checked are `unknown`, not `no`.
 - Fewer than 10 relevant documents is acceptable. Padding is not.
+- The log says whether any single opened document shows every essential feature, and says that in-force claims were not reviewed.
 - The inventor has looked at the closest items and agrees the comparison is fair.
 
 A new search that adds a closer reference reopens this gate and G3.
@@ -89,8 +91,9 @@ Exit criteria:
 
 - Closest prior art is one real document (or an identified combination), not a composite the agent invented.
 - Distinguishing features are features, not slogans.
-- Effects used in the argument are effects the disclosure actually supports.
+- Effects used in the argument are graded `measured`, `experienced`, or `directly-inferable` in the fact ledger. `unverified` effects are ignored.
 - Fallback positions are ordered from broader to narrower.
+- `unity_decision` is `one-invention` or `documented-combination`. `split-pending` does not close this gate. The note names the special technical feature (特定技术特征) when more than one candidate invention stays in the file. CN: 专利法 Art. 31 and 实施细则 (2023) Art. 39. US: 35 U.S.C. § 121. PCT: Rule 13.
 - For `US`, the write-up applies obviousness under 35 U.S.C. § 103. For `CN`, it applies the 三步法. For `PCT`, it keeps the two separate enough that national phase counsel can reuse the facts.
 
 ## G4 — Claim-set lock
@@ -102,9 +105,13 @@ Exit criteria:
 | File | `04-claims/claims.md` |
 | Blocks until true | Treating the description, abstract, or export as aligned to a final claim set |
 
-Exit criteria are owned by `claims-drafter`: antecedent basis, support in the
-disclosure, dependency rules, and jurisdiction form. If claims change after
-this gate, reopen G4 and rerun consistency.
+Exit criteria are owned by `claims-drafter`: the inventor has looked at
+`04-claims/dependency_sketch.md` before the claim sentences, unity is
+`one-invention` or `documented-combination`, antecedent basis, support in
+the disclosure, dependency rules, and jurisdiction form. `fee_note.md` may
+warn that the count can add an official fee. It does not delete claims to
+hit a number. If claims change after this gate, reopen G4 and rerun
+consistency.
 
 ## G5 — Final package
 
@@ -117,7 +124,8 @@ this gate, reopen G4 and rerun consistency.
 
 Exit criteria:
 
-- Consistency report has no open failures.
+- Consistency report has no open failures. When drawings exist, each PNG was opened and its sha256 still matches `sheet_manifest.json`.
+- The Word package embeds those same images. A checksum mismatch means this gate is not closed.
 - Abstract length and drawing rules for the jurisdiction have been checked.
 - The inventor knows a registered patent agent or patent attorney still needs to review the file before it is filed.
 - The agent has not submitted anything to an office.
@@ -136,9 +144,11 @@ Order of work:
 4. G2 prior-art review.
 5. G3 inventive-point lock.
 6. G4 claim-set lock.
-7. Description, abstract, drawings (or an explicit `drawings: none`).
-8. Consistency report clean.
-9. G5 final package.
+7. Description, abstract, drawings (or an explicit `drawings: none`). Drawings start from a frozen parts master. Formal sheets come from an editable source and a sha256 manifest.
+8. Consistency report clean, including an opened-sheet check when figures exist. A drawing failure returns to `patent-drawings` before export.
+9. G5 final package. Export embeds the sheets and stops if a checksum changed.
+
+An existing-draft score does not close any gate. Copied files in `incoming/` stay read-only. The orchestrator starts at the earliest stage whose lock or file is not satisfied.
 
 ## Jurisdiction switch
 

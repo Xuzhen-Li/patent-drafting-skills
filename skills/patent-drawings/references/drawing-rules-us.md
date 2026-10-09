@@ -9,6 +9,7 @@ US utility drawings: 37 CFR 1.84, read with 37 CFR 1.83 (the drawing must show e
 ## Lines and sheets
 
 - [ ] Black ink, durable, uniformly thick and well-defined lines. White background.
+- [ ] Each formal sheet comes from an editable source (Graphviz, Mermaid, draw.io, SVG, or a matplotlib script) and has a sha256 in `sheet_manifest.json`. No image-model bitmap, traced art, invented spectrum, or invented structure.
 - [ ] No color. Color drawings require a granted petition under 37 CFR 1.84. Do not plan on color.
 - [ ] No photograph unless a photograph is the only practical way to show the subject, and the checklist in 37 CFR 1.84 for photographs is met.
 - [ ] Views numbered in consecutive Arabic numerals: `FIG. 1`, `FIG. 2`, independent of sheet numbers. Partial views that form one figure use `FIG. 1A`, `FIG. 1B`.

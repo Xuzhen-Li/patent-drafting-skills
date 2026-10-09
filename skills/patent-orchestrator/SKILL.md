@@ -46,13 +46,24 @@ is a stop: ask the user to pick one. `CN` drafts are Chinese. `US` and
 3. Read `patent.yaml`. Report jurisdiction, title, applicant, and each
    gate flag. A flag set `true` while its file is missing is an error:
    set that flag back to `false`, append `LOG.md`, and tell the user.
-4. Walk the routing table from the top and select the first row that
+4. If `incoming/` exists, or the user pointed at old drafts, run
+   `skills/patent-project-setup/scripts/intake_existing.py score`.
+   Reset every gate named in `gates_inconsistent` to false and append
+   `LOG.md`. A stage file counts as missing when the score says it is
+   not real. A filename containing "complete" is not proof. Drawing
+   images without a frozen parts master and a matching sheet checksum are
+   not a finished drawing stage. `visual_look.json` is written by
+   `consistency-checker` after those sheets exist. Do not skip a lock the
+   files do not satisfy.
+5. Walk the routing table from the top and select the first row that
    matches. Tell the user the skill name and why. Then follow that
    skill's `SKILL.md`. Do not skip ahead because a later file already
-   exists.
-5. After the child skill returns, append `LOG.md` if that skill did not,
+   exists. When `intake_score.json` exists, its `earliest_missing`
+   should name the same skill. If it does not, follow the table and say
+   why.
+6. After the child skill returns, append `LOG.md` if that skill did not,
    and issue a fresh status report.
-6. Never set a gate to `true` yourself. Record `true` only after an
+7. Never set a gate to `true` yourself. Record `true` only after an
    explicit approval quoted in the log (see `shared/gates.md`).
 
 ### The twelve skills
@@ -60,7 +71,7 @@ is a stop: ask the user to pick one. `CN` drafts are Chinese. `US` and
 | # | Skill | Owns |
 |---|-------|------|
 | 0 | `patent-orchestrator` | Status, routing, gates, jurisdiction switch |
-| 1 | `patent-project-setup` | `patent.yaml`, folders, blank disclosure form |
+| 1 | `patent-project-setup` | `patent.yaml`, folders, blank disclosure form, read-only `incoming/` |
 | 2 | `invention-disclosure-intake` | `00-disclosure/disclosure.md`, invention lock |
 | 3 | `patentability-screen` | `01-eligibility/screen.md` |
 | 4 | `prior-art-search` | `02-prior-art/search_log.md`, `feature_matrix.csv`, prior-art review |
@@ -68,7 +79,7 @@ is a stop: ask the user to pick one. `CN` drafts are Chinese. `US` and
 | 6 | `claims-drafter` | `04-claims/claims.md`, claim-set lock |
 | 7 | `description-writer` | `05-description/description.md` |
 | 8 | `abstract-writer` | `06-abstract/abstract.md` |
-| 9 | `patent-drawings` | `07-drawings/figure_list.md` and figures |
+| 9 | `patent-drawings` | frozen parts master, figure list, checksummed sheets |
 | 10 | `consistency-checker` | `08-consistency/report.md` |
 | 11 | `patent-docx-export` | `09-package/*.docx`, final package |
 
@@ -77,16 +88,18 @@ is a stop: ask the user to pick one. `CN` drafts are Chinese. `US` and
 | Condition | Next skill |
 |-----------|------------|
 | No `patent.yaml` or missing stage folders | `patent-project-setup` |
-| `gates.invention_lock` is not true, or `00-disclosure/disclosure.md` is missing | `invention-disclosure-intake` |
+| Old drafts were offered and `incoming/` has not been scored | `patent-project-setup` |
+| `gates.invention_lock` is not true, `00-disclosure/disclosure.md` is missing, or that file is not a real disclosure | `invention-disclosure-intake` |
 | `01-eligibility/screen.md` is missing | `patentability-screen` |
 | The screen says stop, and the log has no inventor override | Stop. Do not search or draft |
 | `gates.prior_art_review` is not true, or `02-prior-art/feature_matrix.csv` is missing | `prior-art-search` |
-| `gates.inventive_point_lock` is not true | `inventive-point-finder` |
+| `gates.inventive_point_lock` is not true, or `unity_decision` is missing or `split-pending` | `inventive-point-finder` |
 | `gates.claim_set_lock` is not true, or `04-claims/claims.md` is missing | `claims-drafter` |
 | `05-description/description.md` is missing | `description-writer` |
 | `06-abstract/abstract.md` is missing | `abstract-writer` |
-| Drawings are not `none` in `patent.yaml`, and `07-drawings/figure_list.md` is missing | `patent-drawings` |
-| `08-consistency/report.md` is missing or still has failures | `consistency-checker` |
+| Drawings are not `none`, and the frozen `parts_master.json` or `sheet_manifest.json` is missing, or a sheet checksum does not match | `patent-drawings` |
+| `08-consistency/report.md` records an open drawing failure (checksum, unopened image, forbidden source, or a relationship without a figure) | `patent-drawings` |
+| `08-consistency/report.md` is missing or still has other failures | `consistency-checker` |
 | `gates.final_package` is not true, or `09-package/` has no `.docx` | `patent-docx-export` |
 | All of the above are satisfied | Stop. Counsel review. Do not file |
 

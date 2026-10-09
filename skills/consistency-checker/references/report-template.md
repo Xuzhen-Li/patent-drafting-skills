@@ -70,4 +70,24 @@ Nouns in the abstract that are absent from the description:
 | --- | --- | --- |
 |  | inventor / drafter |  |
 
-Status becomes `pass` when sections 1–3 exit 0, section 4 has no `confirm`, and sections 5–6 have no unresolved rows.
+## 8. Opened sheets
+
+Command:
+
+```bash
+python3 skills/consistency-checker/scripts/check_sheets.py --drawings 07-drawings --look 07-drawings/visual_look.json --format json
+```
+
+Exit code:
+
+| Sheet | Opened | Black on white | sha256 ok | Numerals looked at |
+| --- | --- | --- | --- | --- |
+|  | yes / no | yes / no | yes / no | yes / no |
+
+## 9. Claimed relationships on a figure
+
+| Relationship | Claim | visible_on | Seen in the look |
+| --- | --- | --- | --- |
+|  |  | figure id, or missing | yes / no |
+
+Status becomes `pass` when sections 1–3 and 8 exit 0, section 4 has no `confirm`, section 9 has no missing figure, and sections 5–6 have no unresolved rows. A sheet failure sends the set back to `patent-drawings`.

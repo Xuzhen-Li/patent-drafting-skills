@@ -5,7 +5,7 @@ Author: Xuzhen Li. License: MIT.
 This suite is an original work. It is written from public statutes and
 official guidance only:
 
-- China: 《中华人民共和国专利法》(2020 修正), 《专利法实施细则》(2023 修订),
+- China: 《中华人民共和国专利法》(2020 修正), 《专利法实施细则》(2023 修订, 国务院令第769号, 自2024年1月20日起施行),
   《专利审查指南》(2023 版), CNIPA 官方申请文件格式要求.
 - United States: 35 U.S.C. §§ 101, 102, 103, 112; 37 CFR 1.71–1.84; MPEP
   chapters 600, 700, 2100.
@@ -39,7 +39,7 @@ assistance, not legal advice; a registered patent attorney/agent
 
 1. Never invent experimental data, effects, or embodiments; anything the
    inventor has not supplied is marked `[INVENTOR TO CONFIRM]` / `【待发明人确认】`.
-2. Every claim feature must be supported by the description (CN 实施细则第 20–22 条 / 专利法第 26 条第 4 款; US §112(a)).
+2. Every claim feature must be supported by the description (专利法第 26 条第 4 款; US §112(a)). CN claim form is 实施细则第 22–25 条.
 3. Antecedent basis: every "the X / 所述X" must have an earlier "a X / 一种X".
 4. Reference numerals in description and drawings must match one-to-one.
 5. Prior-art search results must be real, retrievable publications with
@@ -62,9 +62,10 @@ assistance, not legal advice; a registered patent attorney/agent
   04-claims/
   05-description/
   06-abstract/
-  07-drawings/
+  07-drawings/       # parts_master.json, then PNG sheets and sheet_manifest.json
   08-consistency/
-  09-package/        # final .docx files
+  09-package/        # final .docx files, images embedded
+  incoming/          # read-only copies of old drafts, when any
   LOG.md
 ```
 
@@ -81,16 +82,46 @@ assistance, not legal advice; a registered patent attorney/agent
 | 6 | `claims-drafter` | Independent claims (product / method / system / use as applicable), dependent-claim ladder from fallback positions, CN two-part form (前序部分 + 特征部分, "其特征在于") vs US style; antecedent check via script; gate: claim-set lock. | `04-claims/claims.md` |
 | 7 | `description-writer` | CN five sections (技术领域、背景技术、发明内容、附图说明、具体实施方式) per 实施细则第 20 条; US sections per 37 CFR 1.77; enablement and support for every claim feature; embodiments and variants. | `05-description/description.md` |
 | 8 | `abstract-writer` | CN 摘要 ≤300 characters with 摘要附图 selection; US abstract ≤150 words; validated by script. | `06-abstract/abstract.md` |
-| 9 | `patent-drawings` | Plan figure list, black-and-white line drawings, reference numerals, figure types (structure, flowchart, block diagram, schematic); generate via Graphviz/Mermaid/matplotlib/draw.io; CN/US drawing rules checklist. | `07-drawings/figure_list.md`, images |
-| 10 | `consistency-checker` | Cross-check claims ↔ description ↔ drawings ↔ abstract: antecedent basis, numeral matching, claim-feature support, term consistency, dependency validity. Scripts with tests. | `08-consistency/report.md` |
-| 11 | `patent-docx-export` | Build filing-format Word documents (CN: 权利要求书、说明书、说明书附图、说明书摘要、摘要附图 as separate files; US: specification, claims, abstract) using python-docx; line numbering / paragraph numbering per jurisdiction. | `09-package/*.docx` |
+| 9 | `patent-drawings` | Freeze a parts master, then black-and-white sheets from an editable source, with a sha256 per sheet. | `07-drawings/parts_master.json`, `sheet_manifest.json`, images |
+| 10 | `consistency-checker` | Cross-check claims, description, abstract, and opened sheets: numerals, support, black-on-white pixels, and which figure shows each relationship. | `08-consistency/report.md` |
+| 11 | `patent-docx-export` | Build the Word set and embed the PNG sheets. The build fails if a sha256 no longer matches the manifest. | `09-package/*.docx` |
 
 ## Scripts (Python 3.9+, each with pytest tests)
 
 - `claims-drafter/scripts/check_antecedent.py` — parse claims (CN and EN), flag "所述X/the X/said X" without prior introduction in the same claim chain; validate dependency references (no forward refs, no missing claims, CN multiple-dependent rules).
 - `abstract-writer/scripts/check_abstract.py` — CN char count (≤300, excluding punctuation? follow 审查指南: count all characters incl. punctuation — document the rule used), EN word count (≤150).
 - `consistency-checker/scripts/check_numerals.py` — extract "name + numeral" pairs from description and a drawing manifest (JSON), report mismatches, unused numerals, one numeral with two names.
-- `patent-docx-export/scripts/build_docx.py` — markdown sections → .docx per jurisdiction.
+- `patent-docx-export/scripts/build_docx.py` — markdown sections → .docx per jurisdiction. Embeds PNG sheets. Exit 1 when a sha256 no longer matches `sheet_manifest.json`.
+- `patent-drawings/scripts/sheet_checksums.py` — hash formal PNGs from an editable source after `parts_master.json` is frozen. Rejects image-model bitmaps, traced art, invented spectra, and invented structures.
+- `consistency-checker/scripts/check_sheets.py` — opens each PNG, checks black-on-white pixels, checksums, and that each claimed relationship names a figure.
+- `description-writer/scripts/admission_scan.py` — flags background sentences that treat the invention as already known.
+- `description-writer/scripts/added_matter.py` — lists description sentences that are not in the locked disclosure.
+- `patent-project-setup/scripts/intake_existing.py` — copies old drafts into a read-only `incoming/` folder and scores the earliest real stage. It does not close a gate.
+
+## v0.2 additions
+
+Unity (单一性) is decided in `inventive-point-finder` before claims.
+CN uses 专利法 Art. 31 and 实施细则 (2023) Art. 39 (特定技术特征). US
+restriction practice is 35 U.S.C. § 121. PCT unity is Rule 13. A single
+claim set waits until the inventor picks one invention or accepts a
+documented combination.
+
+Drawings freeze `07-drawings/parts_master.json` first. Formal sheets come
+only from Graphviz, Mermaid, draw.io, SVG, or a matplotlib script. The
+consistency checker opens each image. Export embeds the images and fails
+if any checksum differs.
+
+Description adds a domain checklist (machine, circuit, software, process,
+chemistry, biology), a background admission pass, and an added-matter
+list. Biology reminds counsel about 遗传资源来源披露 (专利法 Art. 26,
+paragraph 5), WIPO ST.26, and deposits under 实施细则 Art. 27. The skills
+do not generate sequences or data.
+
+Other additions: origin tags and evidence grades on disclosure facts
+(`unverified` effects are ignored); a single-document novelty line in the
+search log, with a statement that in-force claims were not reviewed; a
+dependency sketch before claim sentences; an excess-fee warning that does
+not impose a claim ceiling; existing-draft intake that cannot skip a lock.
 
 ## Per-skill contract and SKILL.md structure
 
