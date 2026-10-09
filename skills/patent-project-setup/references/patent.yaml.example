@@ -1,0 +1,33 @@
+# patent.yaml
+# Copy into the project root. Delete these comment lines in the project copy
+# if a strict YAML loader complains. Gates stay false until a human closes them.
+
+title: "【待发明人确认】"
+jurisdiction: CN          # CN | US | PCT
+language: zh              # zh for CN; en for US and PCT
+field: "【待发明人确认】"
+
+applicant:
+  name: "【待发明人确认】"
+  type: "【待发明人确认】"   # individual | company | university | other
+  address: ""               # city and country are enough; no national ID
+
+inventors:
+  - name: "【待发明人确认】"
+    role: "【待发明人确认】"  # what they conceived; not a paper author list
+    country: ""
+
+public_disclosure:
+  any: unknown              # yes | no | unknown
+  earliest_date: ""         # ISO date if known
+  note: ""
+
+drawings: pending           # pending | none | planned
+filing_intent: invention    # CN: invention. Do not switch to utility_model here.
+
+gates:
+  invention_lock: false
+  prior_art_review: false
+  inventive_point_lock: false
+  claim_set_lock: false
+  final_package: false

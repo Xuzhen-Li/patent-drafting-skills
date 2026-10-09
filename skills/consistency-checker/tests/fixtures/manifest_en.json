@@ -1,0 +1,12 @@
+{
+  "figures": [
+    {
+      "id": "FIG. 1",
+      "numerals": {
+        "10": "housing",
+        "12": "sensor",
+        "16": "port"
+      }
+    }
+  ]
+}
