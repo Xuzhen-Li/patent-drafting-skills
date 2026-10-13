@@ -1,5 +1,7 @@
 # patent-drafting-skills
 
+[English](README.md) | 中文
+
 一套面向智能体的技能，帮助科研人员和工程师把技术方案写成可以送审的**发明专利**草稿。三种模式：中国发明专利、美国实用专利非临时申请（utility non-provisional）、PCT 国际申请。
 
 流程先访谈、再做客体筛查、再检索真实现有技术、锁定发明点，然后才撰写权利要求。后续技能负责权利要求书、说明书、摘要、附图、一致性核对和 Word 文本。本套件不代替你向任何受理机构提交申请。
@@ -158,7 +160,7 @@ PCT：
 [Espacenet](https://worldwide.espacenet.com)、
 [The Lens](https://www.lens.org)、
 [PATENTSCOPE](https://patentscope.wipo.int)、
-[USPTO Patent Public Search](https://ppubs.uspto.gov)。
+[USPTO Patent Public Search](https://ppubs.uspto.gov/pubwebapp/)。
 
 官费：[cnipa.gov.cn](https://www.cnipa.gov.cn)、
 [uspto.gov](https://www.uspto.gov)、

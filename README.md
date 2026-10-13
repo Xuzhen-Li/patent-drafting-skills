@@ -1,5 +1,7 @@
 # patent-drafting-skills
 
+English | [中文](README.zh-CN.md)
+
 An agent skill suite that helps a researcher or engineer turn a technical
 idea into a filing-ready **invention patent** draft. It supports three
 modes: a Chinese invention patent (发明专利), a US utility non-provisional,
@@ -206,7 +208,7 @@ Search only on official sites:
 [Espacenet](https://worldwide.espacenet.com),
 [The Lens](https://www.lens.org),
 [PATENTSCOPE](https://patentscope.wipo.int),
-[USPTO Patent Public Search](https://ppubs.uspto.gov).
+[USPTO Patent Public Search](https://ppubs.uspto.gov/pubwebapp/).
 
 Fees: [cnipa.gov.cn](https://www.cnipa.gov.cn),
 [uspto.gov](https://www.uspto.gov),
