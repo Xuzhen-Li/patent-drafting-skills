@@ -29,7 +29,7 @@ dropped (one line):
 | D1 | | | | | | | | |
 
 URL hosts: pss-system.cponline.cnipa.gov.cn, patents.google.com,
-worldwide.espacenet.com, lens.org, patentscope.wipo.int, ppubs.uspto.gov.
+worldwide.espacenet.com, lens.org, patentscope.wipo.int, ppubs.uspto.gov/pubwebapp/.
 
 ## Inventor-admitted non-patent disclosures
 

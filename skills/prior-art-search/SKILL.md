@@ -35,7 +35,7 @@ Databases, official sites only:
 - Espacenet: https://worldwide.espacenet.com
 - The Lens: https://www.lens.org
 - PATENTSCOPE: https://patentscope.wipo.int
-- USPTO Patent Public Search: https://ppubs.uspto.gov
+- USPTO Patent Public Search: https://ppubs.uspto.gov/pubwebapp/
 
 ## Procedure (numbered steps)
 

@@ -33,7 +33,7 @@ How to choose a symbol, in this order:
 2. If you have no such document, use the classification browser inside
    [Espacenet](https://worldwide.espacenet.com),
    [PATENTSCOPE](https://patentscope.wipo.int), or
-   [USPTO Patent Public Search](https://ppubs.uspto.gov).
+   [USPTO Patent Public Search](https://ppubs.uspto.gov/pubwebapp/).
    Record the symbol and the official title you saw.
 3. Search once at subclass or main-group breadth combined with a keyword,
    then narrow. A subgroup search alone will miss neighboring groups.
@@ -135,7 +135,7 @@ EN_AB:(sensor AND moisture) AND IC:(G01N) AND DP:[2018 TO 2026]
 
 ### USPTO Patent Public Search
 
-Site: https://ppubs.uspto.gov
+Site: https://ppubs.uspto.gov/pubwebapp/
 
 Build the query with the index picker (title, abstract, claims, CPC,
 IPC, inventor, applicant) and copy the string the tool displays.

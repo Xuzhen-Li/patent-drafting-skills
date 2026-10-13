@@ -249,7 +249,7 @@ Official search and document sites used by `prior-art-search`:
 - [worldwide.espacenet.com](https://worldwide.espacenet.com)
 - [lens.org](https://www.lens.org)
 - [patentscope.wipo.int](https://patentscope.wipo.int)
-- [ppubs.uspto.gov](https://ppubs.uspto.gov)
+- [ppubs.uspto.gov/pubwebapp](https://ppubs.uspto.gov/pubwebapp/)
 
 ## 10. Switching mode
 
