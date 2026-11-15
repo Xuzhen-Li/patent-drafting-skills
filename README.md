@@ -250,6 +250,16 @@ skill needs them. Some scripts (`check_antecedent.py`, `check_abstract.py`,
 their Chinese test fixtures from v0.2.0; the skills call them in English
 mode only.
 
+## Running the tests
+
+```bash
+python3 -m pytest -q skills
+```
+
+The 8 tests in `skills/patent-docx-export/tests/test_build_docx.py` need
+python-docx (`pip install python-docx`). Without it pytest skips that file
+and reports `49 passed, 1 skipped`; with it you should see `57 passed`.
+
 ## License
 
 MIT. Copyright (c) 2026 Xuzhen Li. See [LICENSE](LICENSE).
