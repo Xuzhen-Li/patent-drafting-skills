@@ -2,9 +2,8 @@
 name: consistency-checker
 description: >-
   Cross-check claims, description, drawings, and abstract before export.
-  Antecedent basis, dependency rules, abstract length, and reference numerals.
-  一致性检查、附图标记核对、权利要求支持、术语一致、所述、antecedent、
-  多项从属、摘要字数。
+  Antecedent basis, dependency rules, abstract length, reference numerals,
+  claim support, and consistent terms.
 ---
 
 # Consistency checker
@@ -18,12 +17,12 @@ Scripts:
 - `scripts/check_numerals.py`
 - `scripts/check_sheets.py`
 
-Gate list: [`../../shared/gates.md`](../../shared/gates.md). Term pairs: [`../../shared/glossary_cn_en.md`](../../shared/glossary_cn_en.md).
+Gate list: [`../../shared/gates.md`](../../shared/gates.md). Chinese-to-English terms, when the inventor's notes are Chinese: [`../../shared/glossary_cn_en.md`](../../shared/glossary_cn_en.md).
 
 ## When to use
 
 - Claims, description, and the abstract exist. When `patent.yaml` `drawings` is not `none`, `07-drawings/numerals.json` (from `description-writer`, then updated by `patent-drawings`) and `07-drawings/figure_list.md` (from `patent-drawings`) exist too. `drawings: none` means the inventor recorded that no figure is required, so there is no figure list to check.
-- The user asks for a consistency check (一致性检查) or a pre-export review.
+- The user asks for a consistency check or a pre-export review.
 
 ## Inputs
 
@@ -61,7 +60,7 @@ python3 skills/consistency-checker/scripts/check_numerals.py \
   --format both
 ```
 
-The manifest shape is `{"figures":[{"id":"FIG. 1","numerals":{"10":"housing"}}]}`. CN ids look like `图1`, and names are Chinese. Exit 1 until every code below is cleared or explicitly accepted by the inventor:
+The manifest shape is `{"figures":[{"id":"FIG. 1","numerals":{"10":"housing"}}]}`. Exit 1 until every code below is cleared or explicitly accepted by the inventor:
 
 - `numeral_missing_in_text` — on a figure, absent from the description
 - `numeral_missing_in_drawings` — in the description, absent from the manifest
@@ -85,14 +84,14 @@ The script decodes each PNG, checks the sha256, and checks black lines on white.
 - `relationship_without_figure` / `relationship_not_seen` — a claimed relationship has no figure, or the look did not record it there
 - `image_unreadable` — the file did not open as a PNG
 
-6. Support matrix. For each claim feature, the description row is `supported` only when the same noun and the same relationship appear in 发明内容 or 具体实施方式 (or the US brief summary and detailed description). 专利法第26条第4款; 35 U.S.C. §112(a). A `confirm` row blocks export. Where the claims promise a figure, name that figure. "Somewhere in the drawings" is not enough.
-7. Term pass. One concept, one noun, in the claim, the description, the abstract, and `numerals.json`. Use the glossary for CN/EN pairs. Do not translate inside a single-language filing.
+6. Support matrix. For each claim feature, the description row is `supported` only when the same noun and the same relationship appear in the brief summary or the detailed description. 35 U.S.C. §112(a); PCT Article 6. A `confirm` row blocks export. Where the claims promise a figure, name that figure. "Somewhere in the drawings" is not enough.
+7. Term pass. One concept, one noun, in the claim, the description, the abstract, and `numerals.json`. Do not mix a translated term with the original one.
 8. Abstract new-matter pass. Every noun in the abstract already occurs in the description. The abstract does not add a result.
 9. Set the report status to `pass` or `blocked`. `blocked` lists the owner of each open item. Drawing failures are owned by `patent-drawings`.
 
 ## Human gate(s)
 
-The final-package gate (最终文本包) requires this report in `pass` status, or a written inventor decision on each remaining item. Export does not start on `blocked`.
+The final-package gate requires this report in `pass` status, or a written inventor decision on each remaining item. Export does not start on `blocked`.
 
 ## Outputs
 
@@ -104,7 +103,7 @@ The final-package gate (最终文本包) requires this report in `pass` status, 
 - All three scripts were run on the current files, and the report quotes their exit codes.
 - No forward claim reference, no missing claim, no non-alternative multiple dependency, no multiple-dependent claim depending on another multiple-dependent claim.
 - Antecedent defects from the script are fixed or listed with the branch that failed.
-- Numeral names match exactly after the script's cleanup (`housing` and `Housing` match; `壳体` and `盖体` do not).
+- Numeral names match exactly after the script's cleanup (`housing` and `Housing` match; `housing` and `casing` do not).
 - The support matrix has no empty feature cells.
 - The abstract length check is exit 0.
 - When drawings exist, `check_sheets.py` was run, every sheet row says `opened=true`, and no relationship lacks a figure.

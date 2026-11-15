@@ -1,5 +1,13 @@
 # patent-drafting-skills — Design Spec (clean-room)
 
+> Scope change, 2026-11-15 (unreleased): this repository now drafts English
+> patents only (US utility non-provisional and PCT). The `CN` mode, the
+> Chinese README, and the CN-only templates were removed; Chinese invention
+> patents are handled in
+> [patent-skills-private](https://github.com/Xuzhen-Li/patent-skills-private).
+> The spec below is the v0.1–v0.2 text and still describes the CN mode;
+> read every CN item in it as no longer in effect.
+
 Author: Xuzhen Li. License: MIT.
 
 This suite is an original work. It is written from public statutes and

@@ -56,5 +56,5 @@ inventor adopts it. Do not leave the origin column blank.
 ## Lock
 
 Read back the essential-feature list and the disclosure table. Ask for
-`发明人确认锁定交底` or `I confirm the invention lock` only when sections
+`I confirm the invention lock` only when sections
 4, 5, and 11 of the form are no longer empty placeholders.

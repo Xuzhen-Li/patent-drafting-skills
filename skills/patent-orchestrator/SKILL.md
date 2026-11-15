@@ -1,16 +1,17 @@
 ---
 name: patent-orchestrator
-description: "Entry point for an invention-patent draft. Reads patent.yaml and LOG.md, reports the stage, routes to the next skill, enforces human gates, and switches CN/US/PCT. Triggers: \"我要写一个发明专利\", \"start a US patent draft\", \"起草PCT国际申请\", \"专利写到哪了\", \"continue the patent\", \"switch to PCT\", \"切换到美国申请\". Do not use this skill to draft claims, the description, or office-action responses."
+description: "Entry point for an invention-patent draft. Reads patent.yaml and LOG.md, reports the stage, routes to the next skill, enforces human gates, and switches between US and PCT. English drafts only. Triggers: \"start a US patent draft\", \"draft a PCT application\", \"where is the patent draft\", \"continue the patent\", \"switch to PCT\", \"switch to a US filing\". Do not use this skill to draft claims, the description, or office-action responses."
 ---
 
 # Patent orchestrator
 
-Drafting assistance, not legal advice. A 专利代理师 (registered patent
-agent) or patent attorney reviews the package before anyone files it.
+Drafting assistance, not legal advice. A registered patent
+agent or patent attorney reviews the package before anyone files it.
 
 This skill does not write claims, the description, or the abstract. It
 decides which skill runs next and stops on a human gate. Jurisdiction
-rules: `shared/jurisdictions.md`. Gate rules: `shared/gates.md`. Terms:
+rules: `shared/jurisdictions.md`. Gate rules: `shared/gates.md`. Chinese-to-English
+terms for inventors who write their notes in Chinese:
 `shared/glossary_cn_en.md`. Those files live in the suite repository.
 The operational rules below are enough after `install.sh`.
 
@@ -18,7 +19,7 @@ The operational rules below are enough after `install.sh`.
 
 - The user wants to start, resume, or re-route a patent draft.
 - The user asks where the draft stands.
-- The user switches jurisdiction (`CN`, `US`, `PCT`).
+- The user switches jurisdiction (`US`, `PCT`).
 
 Do not use it to search prior art, judge a single eligibility question in
 depth, or edit claim language. Route those requests.
@@ -34,9 +35,10 @@ When the project exists, read:
 - `<project>/LOG.md`
 - Presence of the stage files listed in the routing table (do not read every draft in full)
 
-`patent.yaml` field `jurisdiction` is `CN`, `US`, or `PCT`. Anything else
-is a stop: ask the user to pick one. `CN` drafts are Chinese. `US` and
-`PCT` drafts are English.
+`patent.yaml` field `jurisdiction` is `US` or `PCT`. Anything else
+is a stop: ask the user to pick one. Drafts are in English. A Chinese
+invention patent (CNIPA) is out of scope for this suite; point the user
+to the Chinese pack, https://github.com/Xuzhen-Li/patent-skills-private.
 
 ## Procedure (numbered steps)
 
@@ -109,12 +111,11 @@ Record that sentence in the log.
 
 ### Jurisdiction switch
 
-When the user changes `CN` / `US` / `PCT`:
+When the user changes `US` / `PCT`:
 
-1. Explain what must be redone: output language, claim form (其特征在于
-   versus "comprising"), abstract limit, grace period (专利法 Art. 24
-   versus 35 U.S.C. § 102(b)(1); PCT adds no grace of its own), and the
-   inventive-step write-up (三步法 versus § 103).
+1. Explain what must be redone: claim form and fees, the grace period
+   (35 U.S.C. § 102(b)(1) for US; PCT adds no grace of its own), and the
+   inventive-step write-up (§ 103 versus the PCT problem-solution style).
 2. Wait for an explicit yes.
 3. Update `jurisdiction`. Set every gate that is already true back to
    `false`. Keep `00-disclosure/disclosure.md` as facts, but mark legal
@@ -125,7 +126,7 @@ When the user changes `CN` / `US` / `PCT`:
 ### Status report
 
 Use `references/status-report.md`. Include open items marked
-`【待发明人确认】` or `[INVENTOR TO CONFIRM]`, and any public disclosure
+`[INVENTOR TO CONFIRM]`, and any public disclosure
 the inventor has admitted.
 
 ## Human gate(s)
@@ -143,7 +144,7 @@ This skill enforces gates; it does not close them. If the user asks to
 ## Quality checklist
 
 - [ ] The next skill is the first matching row, not a later one the user happened to mention.
-- [ ] Jurisdiction is `CN`, `US`, or `PCT`, and the output language matches.
+- [ ] Jurisdiction is `US` or `PCT`, and the output is in English.
 - [ ] No gate was set to `true` in this turn without a quoted approval.
 - [ ] A "do not proceed" screen is honored unless the log contains an override.
 - [ ] The report names file paths, not a vague "almost done".
@@ -152,8 +153,8 @@ This skill enforces gates; it does not close them. If the user asks to
 
 - Do not fabricate data, effects, prior-art documents, or dates.
 - Do not tell the user that a paper is "safe" under a grace period. State the rule and mark the facts unconfirmed until dates are in the disclosure.
-- Do not submit anything to CNIPA, USPTO, or a receiving Office.
-- Do not hide a close reference. US duty of disclosure: 37 CFR 1.56. CN good faith: 专利法 Art. 20.
+- Do not submit anything to the USPTO or a receiving Office.
+- Do not hide a close reference. US duty of disclosure: 37 CFR 1.56.
 - Unpublished technical content may be confidential. Warn once, at the start of a new project, that a public disclosure before filing can destroy novelty.
 
 ## Next step

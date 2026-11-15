@@ -1,7 +1,7 @@
 # Human gates
 
 The agent drafts. The inventor decides. A gate is open only after the
-inventor, or their 专利代理师 (patent agent) / patent attorney, explicitly
+inventor, or their registered patent agent or patent attorney, explicitly
 says so in the conversation. The agent then records the decision in
 `patent.yaml` and appends `LOG.md`. Silence, a polite "looks fine", or the
 agent's own confidence does not close a gate.
@@ -28,11 +28,11 @@ rewrite older entries.
 
 Suggested phrases, so the record is unambiguous:
 
-- Invention lock: `发明人确认锁定交底` or `I confirm the invention lock`
-- Prior-art review: `发明人确认检索结果` or `I confirm the prior-art review`
-- Inventive-point lock: `发明人确认发明点` or `I confirm the inventive-point lock`
-- Claim-set lock: `发明人确认权利要求` or `I confirm the claim-set lock`
-- Final package: `发明人确认文本包` or `I confirm the final package`
+- Invention lock: `I confirm the invention lock`
+- Prior-art review: `I confirm the prior-art review`
+- Inventive-point lock: `I confirm the inventive-point lock`
+- Claim-set lock: `I confirm the claim-set lock`
+- Final package: `I confirm the final package`
 
 Any clear equivalent is enough if the log quotes it. Do not treat a
 discussion of one paragraph as approval of the whole document.
@@ -93,8 +93,8 @@ Exit criteria:
 - Distinguishing features are features, not slogans.
 - Effects used in the argument are graded `measured`, `experienced`, or `directly-inferable` in the fact ledger. `unverified` effects are ignored.
 - Fallback positions are ordered from broader to narrower.
-- `unity_decision` is `one-invention` or `documented-combination`. `split-pending` does not close this gate. The note names the special technical feature (特定技术特征) when more than one candidate invention stays in the file. CN: 专利法 Art. 31 and 实施细则 (2023) Art. 39. US: 35 U.S.C. § 121. PCT: Rule 13.
-- For `US`, the write-up applies obviousness under 35 U.S.C. § 103. For `CN`, it applies the 三步法. For `PCT`, it keeps the two separate enough that national phase counsel can reuse the facts.
+- `unity_decision` is `one-invention` or `documented-combination`. `split-pending` does not close this gate. The note names the special technical feature when more than one candidate invention stays in the file. US: 35 U.S.C. § 121. PCT: Rule 13.
+- For `US`, the write-up applies obviousness under 35 U.S.C. § 103. For `PCT`, it applies Article 33 and keeps the facts separate enough that national phase counsel can reuse them.
 
 ## G4 — Claim-set lock
 
@@ -154,4 +154,4 @@ An existing-draft score does not close any gate. Copied files in `incoming/` sta
 
 If `jurisdiction` changes after G1, reopen every gate that is already true,
 keep the disclosure facts, and rewrite the legal analysis in the new mode.
-Do not leave a Chinese claim set marked locked inside a US project.
+Do not leave a US claim set marked locked inside a PCT project, or the reverse.

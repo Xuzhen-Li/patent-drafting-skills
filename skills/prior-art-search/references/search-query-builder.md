@@ -16,8 +16,8 @@ Rules:
 - Keep the inventor's term, then add synonyms a patent might use
   (function, structure, trade name, Latin name, old name).
 - Do not add a synonym that changes the invention.
-- Chinese and English both belong in the table when the jurisdiction is
-  `CN` or when Chinese publications matter. Search the original script,
+- Chinese and English both belong in the table when Chinese publications
+  matter (prior art from any country counts). Search the original script,
   not only a translation.
 
 ## 2. IPC and CPC

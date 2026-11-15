@@ -6,16 +6,10 @@ plausible experiment, a plausible number, or a plausible drawing.
 
 Public disclosure: a paper, preprint, poster, thesis, talk, sale, demo,
 product launch, or public code release before the filing date can destroy
-novelty. China (Patent Law Art. 22 and Art. 24) does not give a general
-six-month grace for the inventor's own article. Art. 24, as amended in
-2020, covers only four situations in those six months: a first disclosure
-for the public interest while the state is in an emergency or an
-extraordinary situation; a first showing at an international exhibition
-sponsored or recognized by the Chinese government; a first paper at a
-prescribed academic or technological meeting; or a disclosure by another
-person without the applicant's consent. The United States has a one-year inventor
+novelty. The United States has a one-year inventor
 grace under 35 U.S.C. § 102(b)(1). A PCT application does not create a grace
-period; each national phase applies its own law.
+period; each national phase applies its own law, and some (China, for
+example) give no general grace for the inventor's own article.
 
 Jurisdiction of this form: US or PCT. Body text in English.
 
