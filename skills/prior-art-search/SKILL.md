@@ -28,7 +28,7 @@ Do not use it to invent citations from memory of "famous patents".
 - Blank matrix: `references/feature-matrix.csv`.
 - Blank log: `references/search-log-template.md`.
 
-Databases, official sites only:
+Databases to search (patent offices and established public databases only):
 
 - CNIPA patent search, for Chinese-language prior art: https://pss-system.cponline.cnipa.gov.cn
 - Google Patents: https://patents.google.com

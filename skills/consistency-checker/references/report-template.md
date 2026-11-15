@@ -9,7 +9,7 @@ Status: blocked
 Command:
 
 ```bash
-python3 skills/claims-drafter/scripts/check_antecedent.py 04-claims/claims.md --lang auto --format json
+python3 skills/claims-drafter/scripts/check_antecedent.py 04-claims/claims.md --lang en --format json
 ```
 
 Exit code:
@@ -27,7 +27,7 @@ Heuristic limits that still need a human look:
 Command:
 
 ```bash
-python3 skills/abstract-writer/scripts/check_abstract.py 06-abstract/abstract.md --lang auto --format json
+python3 skills/abstract-writer/scripts/check_abstract.py 06-abstract/abstract.md --lang en --format json
 ```
 
 Exit code:

@@ -38,15 +38,15 @@ Gate list: [`../../shared/gates.md`](../../shared/gates.md). Chinese-to-English 
 2. Antecedent and dependencies:
 
 ```bash
-python3 skills/claims-drafter/scripts/check_antecedent.py <project>/04-claims/claims.md --lang auto --format both
+python3 skills/claims-drafter/scripts/check_antecedent.py <project>/04-claims/claims.md --lang en --format both
 ```
 
-Paste the error list into the report. Exit 0 is required before export. Read the JSON `limitations` and note any phrase the heuristic cannot see (`any preceding claim`, a noun split by 的).
+Paste the error list into the report. Exit 0 is required before export. Read the JSON `limitations` and note any phrase the heuristic cannot see (`any preceding claim`, `the first claim`, plurals other than a trailing -s).
 
 3. Abstract:
 
 ```bash
-python3 skills/abstract-writer/scripts/check_abstract.py <project>/06-abstract/abstract.md --lang auto --format both
+python3 skills/abstract-writer/scripts/check_abstract.py <project>/06-abstract/abstract.md --lang en --format both
 ```
 
 Exit 0 is required. Exit 2 means wording must be rewritten. Exit 1 means the abstract must be shortened.

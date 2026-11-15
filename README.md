@@ -191,7 +191,7 @@ later reopens the gates.
 Document sets, drawing rules, and fee pointers:
 [shared/jurisdictions.md](shared/jurisdictions.md).
 
-Search only on official sites:
+Search only in these databases:
 [Google Patents](https://patents.google.com),
 [Espacenet](https://worldwide.espacenet.com),
 [The Lens](https://www.lens.org),
