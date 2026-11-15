@@ -13,11 +13,11 @@ to fill a band, and do not drop a view that the claims need.
 {
   "frozen": true,
   "parts": [
-    {"id": "10", "name": "壳体", "kind": "part"},
-    {"id": "S1", "name": "采集", "kind": "step"}
+    {"id": "10", "name": "housing", "kind": "part"},
+    {"id": "S1", "name": "acquire", "kind": "step"}
   ],
   "relationships": [
-    {"id": "R1", "claim": "1", "text": "壳体容纳传感器", "visible_on": ["图1"]}
+    {"id": "R1", "claim": "1", "text": "housing holds the sensor", "visible_on": ["FIG. 1"]}
   ]
 }
 ```

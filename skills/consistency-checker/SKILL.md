@@ -2,14 +2,13 @@
 name: consistency-checker
 description: >-
   Cross-check claims, description, drawings, and abstract before export.
-  Antecedent basis, dependency rules, abstract length, and reference numerals.
-  一致性检查、附图标记核对、权利要求支持、术语一致、所述、antecedent、
-  多项从属、摘要字数。
+  Antecedent basis, dependency rules, abstract length, reference numerals,
+  claim support, and consistent terms.
 ---
 
 # Consistency checker
 
-Compare the locked claim set, the description, the drawings manifest, and the abstract. Write `08-consistency/report.md`. Do not change technical content in order to silence a check. Either fix the draft or mark the item for the inventor.
+Compare the locked claim set, the description, the drawings manifest, and the abstract, then write `08-consistency/report.md`. Do not alter technical content merely to silence a check; either fix the draft or flag the item for the inventor.
 
 Scripts:
 
@@ -18,12 +17,12 @@ Scripts:
 - `scripts/check_numerals.py`
 - `scripts/check_sheets.py`
 
-Gate list: [`../../shared/gates.md`](../../shared/gates.md). Term pairs: [`../../shared/glossary_cn_en.md`](../../shared/glossary_cn_en.md).
+Gate list: [`../../shared/gates.md`](../../shared/gates.md). Chinese-to-English terms, when the inventor's notes are in Chinese: [`../../shared/glossary_cn_en.md`](../../shared/glossary_cn_en.md).
 
 ## When to use
 
-- Claims, description, and the abstract exist. When `patent.yaml` `drawings` is not `none`, `07-drawings/numerals.json` (from `description-writer`, then updated by `patent-drawings`) and `07-drawings/figure_list.md` (from `patent-drawings`) exist too. `drawings: none` means the inventor recorded that no figure is required, so there is no figure list to check.
-- The user asks for a consistency check (一致性检查) or a pre-export review.
+- Claims, description, and the abstract exist. When `patent.yaml` `drawings` is not `none`, `07-drawings/numerals.json` (created by `description-writer` and updated by `patent-drawings`) and `07-drawings/figure_list.md` (from `patent-drawings`) also exist. `drawings: none` means the inventor recorded that no figure is required, so there is no figure list to check.
+- The user requests a consistency check or a pre-export review.
 
 ## Inputs
 
@@ -35,24 +34,24 @@ Gate list: [`../../shared/gates.md`](../../shared/gates.md). Term pairs: [`../..
 
 ## Procedure
 
-1. Copy the report template to `08-consistency/report.md`. Record jurisdiction and the date of the files, not a guessed filing date.
+1. Copy the report template to `08-consistency/report.md`. Record the jurisdiction and the date of the files rather than a guessed filing date.
 2. Antecedent and dependencies:
 
 ```bash
-python3 skills/claims-drafter/scripts/check_antecedent.py <project>/04-claims/claims.md --lang auto --format both
+python3 skills/claims-drafter/scripts/check_antecedent.py <project>/04-claims/claims.md --lang en --format both
 ```
 
-Paste the error list into the report. Exit 0 is required before export. Read the JSON `limitations` and note any phrase the heuristic cannot see (`any preceding claim`, a noun split by 的).
+Paste the error list into the report. Exit code 0 is required before export. Inspect the JSON `limitations` and note any phrase the heuristic cannot see (`any preceding claim`, `the first claim`, plurals other than a trailing -s).
 
 3. Abstract:
 
 ```bash
-python3 skills/abstract-writer/scripts/check_abstract.py <project>/06-abstract/abstract.md --lang auto --format both
+python3 skills/abstract-writer/scripts/check_abstract.py <project>/06-abstract/abstract.md --lang en --format both
 ```
 
-Exit 0 is required. Exit 2 means wording must be rewritten. Exit 1 means the abstract must be shortened.
+Exit code 0 is required. Exit code 2 means the wording must be rewritten; exit code 1 means the abstract must be shortened.
 
-4. Numerals. If `drawings` is `none`, skip the script and write in the report that the inventor recorded no figures. Otherwise run:
+4. Numerals. If `drawings` is `none`, skip the script and record in the report that the inventor noted no figures. Otherwise, run:
 
 ```bash
 python3 skills/consistency-checker/scripts/check_numerals.py \
@@ -61,14 +60,14 @@ python3 skills/consistency-checker/scripts/check_numerals.py \
   --format both
 ```
 
-The manifest shape is `{"figures":[{"id":"FIG. 1","numerals":{"10":"housing"}}]}`. CN ids look like `图1`, and names are Chinese. Exit 1 until every code below is cleared or explicitly accepted by the inventor:
+The manifest format is `{"figures":[{"id":"FIG. 1","numerals":{"10":"housing"}}]}`. The script exits with code 1 until every error code below is resolved or explicitly accepted by the inventor:
 
-- `numeral_missing_in_text` — on a figure, absent from the description
-- `numeral_missing_in_drawings` — in the description, absent from the manifest
-- `numeral_multiple_names` — one numeral, two names
-- `name_multiple_numerals` — one name, two numerals
+- `numeral_missing_in_text` — present on a figure, absent from the description
+- `numeral_missing_in_drawings` — present in the description, absent from the manifest
+- `numeral_multiple_names` — one numeral assigned two names
+- `name_multiple_numerals` — one name assigned two numerals
 
-5. Sheets, unless `drawings` is `none`. Open every PNG. Do not pass a sheet you have not opened. Record the look in `07-drawings/visual_look.json`: for each sheet id, `numerals_match_master` and `relationships_seen`. Then run:
+5. Sheets, unless `drawings` is `none`. Open every PNG file; do not pass any sheet you have not opened. Record the look in `07-drawings/visual_look.json`: for each sheet id, `numerals_match_master` and `relationships_seen`. Then run:
 
 ```bash
 python3 skills/consistency-checker/scripts/check_sheets.py \
@@ -77,46 +76,46 @@ python3 skills/consistency-checker/scripts/check_sheets.py \
   --format both
 ```
 
-The script decodes each PNG, checks the sha256, and checks black lines on white. A colored pixel or shading fails even if the look file says otherwise. Each relationship in `parts_master.json` must name the figure where it is visible (`visible_on`). Exit 1 until the codes are cleared. Any checksum, unreadable image, or black-on-white failure restarts the whole set: return to `patent-drawings`, rebuild every sheet, and look again. Do not pass the other sheets.
+The script decodes each PNG, verifies its sha256 checksum, and checks for black lines on a white background. Any colored pixel or shading fails even if the look file says otherwise. Each relationship in `parts_master.json` must identify the figure where it is visible (`visible_on`). The script exits with code 1 until all error codes are resolved. Any checksum mismatch, unreadable image, or black-on-white failure invalidates the entire set: return to `patent-drawings`, rebuild every sheet, and inspect them again rather than passing the remaining sheets.
 
-- `checksum_mismatch` — the PNG changed after the manifest
-- `not_black_on_white` / `blank_sheet` — the opened pixels fail
-- `visual_look_missing` / `numeral_look_failed` — nobody confirmed the numerals on that image
-- `relationship_without_figure` / `relationship_not_seen` — a claimed relationship has no figure, or the look did not record it there
-- `image_unreadable` — the file did not open as a PNG
+- `checksum_mismatch` — the PNG changed after the manifest was written
+- `not_black_on_white` / `blank_sheet` — the decoded pixels fail the black-on-white check
+- `visual_look_missing` / `numeral_look_failed` — the numerals on that image were not confirmed
+- `relationship_without_figure` / `relationship_not_seen` — a claimed relationship lacks a figure, or the look did not record it there
+- `image_unreadable` — the file could not be opened as a PNG
 
-6. Support matrix. For each claim feature, the description row is `supported` only when the same noun and the same relationship appear in 发明内容 or 具体实施方式 (or the US brief summary and detailed description). 专利法第26条第4款; 35 U.S.C. §112(a). A `confirm` row blocks export. Where the claims promise a figure, name that figure. "Somewhere in the drawings" is not enough.
-7. Term pass. One concept, one noun, in the claim, the description, the abstract, and `numerals.json`. Use the glossary for CN/EN pairs. Do not translate inside a single-language filing.
-8. Abstract new-matter pass. Every noun in the abstract already occurs in the description. The abstract does not add a result.
-9. Set the report status to `pass` or `blocked`. `blocked` lists the owner of each open item. Drawing failures are owned by `patent-drawings`.
+6. Support matrix. For each claim feature, the description row is marked `supported` only when the same noun and the same relationship appear in the brief summary or the detailed description (35 U.S.C. §112(a); PCT Article 6). A `confirm` row blocks export. Where the claims promise a figure, name that figure. "Somewhere in the drawings" is not enough.
+7. Terminology pass. Use one noun per concept consistently across the claims, description, abstract, and `numerals.json`. Do not mix a translated term with the original term.
+8. Abstract new-matter pass. Confirm that every noun in the abstract already appears in the description and that the abstract introduces no new results.
+9. Set the report status to `pass` or `blocked`. A `blocked` report lists the owner of each open item; drawing failures belong to `patent-drawings`.
 
 ## Human gate(s)
 
-The final-package gate (最终文本包) requires this report in `pass` status, or a written inventor decision on each remaining item. Export does not start on `blocked`.
+The final-package gate requires this report to be in `pass` status, or requires a written inventor decision for each remaining open item. Export cannot begin while the status is `blocked`.
 
 ## Outputs
 
 - `08-consistency/report.md`
-- Optional JSON copies next to it if the user wants the raw script output (`claims.json`, `abstract.json`, `numerals.json`)
+- Optional JSON copies alongside it if the user wants the raw script output (`claims.json`, `abstract.json`, `numerals.json`)
 
 ## Quality checklist
 
-- All three scripts were run on the current files, and the report quotes their exit codes.
-- No forward claim reference, no missing claim, no non-alternative multiple dependency, no multiple-dependent claim depending on another multiple-dependent claim.
-- Antecedent defects from the script are fixed or listed with the branch that failed.
-- Numeral names match exactly after the script's cleanup (`housing` and `Housing` match; `壳体` and `盖体` do not).
-- The support matrix has no empty feature cells.
-- The abstract length check is exit 0.
-- When drawings exist, `check_sheets.py` was run, every sheet row says `opened=true`, and no relationship lacks a figure.
+- All three scripts were run against the current files, and the report quotes their exit codes.
+- No forward claim references, missing claims, non-alternative multiple dependencies, or multiple-dependent claims depending on another multiple-dependent claim.
+- Antecedent defects flagged by the script are either fixed or listed along with the failing branch.
+- Numeral names match exactly after the script's cleanup (`housing` and `Housing` match; `housing` and `casing` do not).
+- The support matrix contains no empty feature cells.
+- The abstract length check exits with code 0.
+- When drawings exist, `check_sheets.py` was run, every sheet row records `opened=true`, and no relationship lacks a figure.
 
 ## Guardrails
 
-- Do not delete a claim feature or a numeral only to make a script exit 0. Ask which text is wrong: the claim, the description, or the figure.
+- Do not delete a claim feature or a numeral just to make a script exit with code 0. Ask which text is wrong: the claim, the description, or the figure.
 - Do not waive a pixel failure from the look file. Return the set to `patent-drawings`.
-- Do not treat a script pass as a legal clearance. The limitations in each script still apply.
+- Do not treat a passing script run as legal clearance; the documented limitations of each script still apply.
 - Do not invent a prior-art citation while "fixing" the background section.
-- Leave the package confidential.
+- Keep the package confidential.
 
 ## Next step
 
-`patent-docx-export` when the report status is `pass`.
+Proceed to `patent-docx-export` once the report status is `pass`.

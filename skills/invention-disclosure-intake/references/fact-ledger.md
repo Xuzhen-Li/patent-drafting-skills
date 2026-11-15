@@ -1,9 +1,9 @@
-# Fact ledger / 事实分层
+# Fact ledger
 
 Copy to `00-disclosure/fact_ledger.md`. One row per feature or effect.
 The disclosure prose can summarize. This table is what later skills read.
 
-Origin (来源), one value:
+Origin, one value:
 
 | Token | Meaning |
 | --- | --- |
@@ -13,7 +13,7 @@ Origin (来源), one value:
 | `suggested` | An agent proposal. It stays out of claims until the inventor changes the tag to `user-confirmed` |
 | `open` | Still unknown |
 
-Evidence grade (证据等级), for effects. Features that are not effects use `n/a`.
+Evidence grade, for effects. Features that are not effects use `n/a`.
 
 | Token | Meaning |
 | --- | --- |

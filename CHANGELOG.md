@@ -2,6 +2,13 @@
 
 All notable changes to this suite are documented in this file.
 
+## Unreleased — 2026-11-15
+
+- English patents only: US utility non-provisional and PCT. The `CN` jurisdiction is gone from the orchestrator, setup, screen, search, inventive-point, claims, description, abstract, drawings, consistency, and export skills, and from `shared/jurisdictions.md` and `shared/gates.md`.
+- Removed `README.zh-CN.md` and the CN-only templates: `cn-claims-template.md`, `cn-description-template.md`, `drawing-rules-cn.md`, `eligibility-checklist.cn.md`, `disclosure-form.zh-CN.md`. Chinese invention patents now live in patent-skills-private.
+- Kept `shared/glossary_cn_en.md` for inventors whose notes are in Chinese, and CNIPA search as a prior-art source.
+- Scripts and their tests are unchanged; their Chinese modes are no longer called by the skills.
+
 ## 0.2.0 — 2026-10-09
 
 - Unity check before claims: separate inventions that do not share one special technical feature (专利法 Art. 31; 实施细则 Art. 39; 35 U.S.C. § 121; PCT Rule 13). One claim set waits for `one-invention` or a documented combination.

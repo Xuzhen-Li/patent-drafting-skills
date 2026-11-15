@@ -1,31 +1,30 @@
 ---
 name: invention-disclosure-intake
-description: "Interviews the inventor and writes a complete invention disclosure (技术交底书) from their answers only, then stops for the invention lock (发明锁定). Triggers: \"写技术交底书\", \"填写交底\", \"interview the inventor\", \"complete the invention disclosure\", \"锁定技术方案\". Do not use this skill to search prior art, judge patentability, or draft claims."
+description: "Interviews the inventor and writes a complete invention disclosure from their answers only, then stops for the invention lock. Triggers: \"interview the inventor\", \"complete the invention disclosure\", \"lock the technical solution\". Do not use this skill to search prior art, judge patentability, or draft claims."
 ---
 
 # Invention disclosure intake
 
 Turn the inventor's answers into `00-disclosure/disclosure.md`. Every
 sentence comes from the inventor or from a document they handed you.
-Missing facts stay `【待发明人确认】` (CN) or `[INVENTOR TO CONFIRM]`
-(US, PCT).
+Missing facts stay `[INVENTOR TO CONFIRM]`.
 
-Not legal advice. A 专利代理师 (patent agent) or patent attorney reviews
+Not legal advice. A registered patent agent or patent attorney reviews
 the file before filing.
 
 ## When to use
 
 - The project exists and `gates.invention_lock` is not true.
-- The inventor wants to fill or correct the 技术交底书 (invention disclosure).
+- The inventor wants to fill or correct the invention disclosure.
 
 Do not use it after the lock unless the inventor reopens the lock by
 changing the solution, the essential features, or the disclosure history.
 
 ## Inputs (paths) / Preconditions
 
-- `<project>/patent.yaml` with `jurisdiction` set to `CN`, `US`, or `PCT`.
+- `<project>/patent.yaml` with `jurisdiction` set to `US` or `PCT`.
 - `<project>/00-disclosure/disclosure_form.md` (seeded by `patent-project-setup`).
-- If the form is missing, copy it from `../patent-project-setup/references/disclosure-form.zh-CN.md` (CN) or `../patent-project-setup/references/disclosure-form.en.md` (US, PCT). Those paths are relative to this skill directory.
+- If the form is missing, copy it from `../patent-project-setup/references/disclosure-form.en.md`. Those paths are relative to this skill directory.
 - Interview questions: `references/interview-checklist.md`.
 
 Read `patent.yaml` `public_disclosure` before the interview so you do not
@@ -43,8 +42,8 @@ ask the inventor to repeat a date they already gave. Still confirm it.
      drawings (form §§ 5–10).
    - Pass C — disclosures, applicant, inventors, genetic resources,
      sequences (form §§ 11–13).
-3. Write `00-disclosure/disclosure.md` in Chinese for `CN`, English for
-   `US` and `PCT`. Keep the form's section order. Under each effect, name
+3. Write `00-disclosure/disclosure.md` in English. If the inventor's notes
+   are in Chinese, `shared/glossary_cn_en.md` lists standard English terms. Keep the form's section order. Under each effect, name
    the control and the source, or write that the effect is unquantified.
 4. Write `00-disclosure/fact_ledger.md` from `references/fact-ledger.md`.
    Every feature and every effect gets an origin tag: `user-confirmed`,
@@ -53,13 +52,13 @@ ask the inventor to repeat a date they already gave. Still confirm it.
    `directly-inferable`, or `unverified`. A `suggested` row stays out of
    later claims until the inventor changes it to `user-confirmed`.
    Do not upgrade `unverified`.
-5. Build a gap list at the top of the file: every `【待发明人确认】` or
+5. Build a gap list at the top of the file: every
    `[INVENTOR TO CONFIRM]`, one line each. Include `open` and `suggested`
    ledger rows.
 6. Show the draft. Ask whether the essential-feature column and the
    origin tags are right. Do not proceed to prior-art search inside this skill.
-7. Invention lock, only if the inventor explicitly says `发明人确认锁定交底`
-   or `I confirm the invention lock` (or a clear equivalent you quote):
+7. Invention lock, only if the inventor explicitly says
+   `I confirm the invention lock` (or a clear equivalent you quote):
    - Set `gates.invention_lock` to `true` in `patent.yaml`.
    - Append `LOG.md` with the date, this skill's name, the quoted approval,
      and the disclosure filename.
@@ -105,7 +104,7 @@ Do not write `01-eligibility/`, `02-prior-art/`, or `04-claims/`.
 
 ## Guardrails
 
-- Do not embellish "positive results" to satisfy 实用性 (practical applicability). If no positive result is known, say so.
+- Do not embellish "positive results" to satisfy utility (industrial applicability). If no positive result is known, say so.
 - Do not drop a failed experiment to make the invention look cleaner.
 - Do not advise the inventor to hide a publication. Record it.
 - Do not store national ID numbers.

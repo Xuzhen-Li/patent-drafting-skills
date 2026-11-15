@@ -1,6 +1,6 @@
 ---
 name: prior-art-search
-description: "Builds IPC/CPC and keyword queries, searches real patent databases, and writes a search log plus a feature-comparison matrix. Triggers: \"检索现有技术\", \"查专利\", \"prior art search\", \"search Espacenet\", \"找最接近的对比文件\". Do not use this skill to declare the invention novel or to draft claims."
+description: "Builds IPC/CPC and keyword queries, searches real patent databases, and writes a search log plus a feature-comparison matrix. Triggers: \"prior art search\", \"search Espacenet\", \"find the closest reference\". Do not use this skill to declare the invention novel or to draft claims."
 ---
 
 # Prior-art search
@@ -8,7 +8,7 @@ description: "Builds IPC/CPC and keyword queries, searches real patent databases
 Find real documents. Record what you opened. Compare features. Stop for
 the inventor to review. Not legal advice, and not a patentability opinion.
 
-A 专利代理师 (patent agent) or patent attorney should review the matrix
+A registered patent agent or patent attorney should review the matrix
 before it drives claim scope.
 
 ## When to use
@@ -28,9 +28,9 @@ Do not use it to invent citations from memory of "famous patents".
 - Blank matrix: `references/feature-matrix.csv`.
 - Blank log: `references/search-log-template.md`.
 
-Databases, official sites only:
+Databases to search (patent offices and established public databases only):
 
-- CNIPA patent search: https://pss-system.cponline.cnipa.gov.cn
+- CNIPA patent search, for Chinese-language prior art: https://pss-system.cponline.cnipa.gov.cn
 - Google Patents: https://patents.google.com
 - Espacenet: https://worldwide.espacenet.com
 - The Lens: https://www.lens.org
@@ -40,7 +40,7 @@ Databases, official sites only:
 ## Procedure (numbered steps)
 
 1. Freeze the feature list from the disclosure (F1, F2, …). If a feature
-   is still `【待发明人确认】` / `[INVENTOR TO CONFIRM]`, you may search
+   is still `[INVENTOR TO CONFIRM]`, you may search
    the confirmed features and you must say which features were not searched.
 2. Build queries with `references/search-query-builder.md`: synonyms,
    IPC and CPC, one keyword query and one classification query at minimum.
@@ -50,8 +50,6 @@ Databases, official sites only:
    symbol you actually selected.
 3. Run the queries. If you cannot open a database, write `not searched`
    and the reason. Do not fill the gap from memory.
-   - `CN`: at least one source that retrieves Chinese publications
-     (CNIPA, Google Patents, Espacenet, or PATENTSCOPE) and one second source.
    - `US`: USPTO Patent Public Search or Google Patents, plus Espacenet or PATENTSCOPE.
    - `PCT`: Espacenet or PATENTSCOPE, plus one other source.
 4. Keep 10 to 20 documents that are actually relevant. If fewer than 10
@@ -77,10 +75,10 @@ Databases, official sites only:
    sentence: in-force claims were not reviewed. This is not a
    freedom-to-operate opinion and not an allowance opinion.
 9. Ask the inventor to review. Prior-art review (G2) closes only on
-   `发明人确认检索结果` or `I confirm the prior-art review`. Then set
+   `I confirm the prior-art review`. Then set
    `gates.prior_art_review` to `true` and quote the approval in `LOG.md`.
 10. Hand the closest one or two documents to the next skill by naming them
-    in the log. Do not run the 三步法 here.
+    in the log. Do not run the inventive-step analysis here.
 
 ## Human gate(s)
 
@@ -117,7 +115,7 @@ and is verified only if you opened it. Do not invent a DOI.
 - Do not fabricate publication numbers, dates, assignees, or quotations.
 - Do not cite a patent because you remember it. Verify it on an official page first.
 - Do not conclude "novel" or "inventive".
-- Do not omit the closest reference because it is inconvenient (37 CFR 1.56; 专利法 Art. 20).
+- Do not omit the closest reference because it is inconvenient (37 CFR 1.56).
 - Do not download or redistribute full PDFs into a public place. Store links and the notes you wrote.
 - Search syntax that errors is fixed from that database's own help, not by inventing a field code.
 

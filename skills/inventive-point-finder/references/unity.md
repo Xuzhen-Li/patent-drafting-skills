@@ -1,36 +1,23 @@
-# Unity of invention / 单一性
+# Unity of invention
 
 Use this note while filling section 7a of the worksheet. It is drafting
-orientation. A 专利代理师 (patent agent) or patent attorney decides whether
+orientation. A registered patent agent or patent attorney decides whether
 to file one application or more than one.
 
 ## What to compare
 
 List every candidate invention that could support its own independent
 claim concept. Two candidates may stay in one application only when they
-share one or more of the same or corresponding special technical features
-(特定技术特征): the features that, for each invention as a whole, make
+share one or more of the same or corresponding special technical features:
+the features that, for each invention as a whole, make
 the contribution over the prior art.
 
 A shared field, a shared product name, or a commercial goal is not that
 feature. A difference that is not in the disclosure cannot be used to
 glue the groups together.
 
-## CN
-
-专利法 Art. 31, first paragraph: one invention-patent application is
-limited to one invention. Two or more inventions that belong to a single
-general inventive concept (一个总的发明构思) may be filed together.
-
-实施细则 (2023 revision) Art. 39: those inventions must be technically
-related and contain one or more of the same or corresponding 特定技术特征.
-The special technical feature is the feature that defines the contribution
-each invention, as a whole, makes over the prior art.
-
 If the groups do not share that feature, do not force one claim set.
-A later divisional (分案) is a filing act for counsel. 实施细则 Art. 48
-is the provision that allows a divisional while the parent is still
-pending. This skill does not file it.
+A later divisional is a filing act for counsel. This skill does not file it.
 
 ## US
 
@@ -38,7 +25,7 @@ pending. This skill does not file it.
 claimed in one application, the Office may require restriction to one of
 them. A divided-out application that meets § 120 can keep the parent
 filing date. Record the groups. Do not call a restriction holding a
-Chinese unity opinion, or the reverse.
+PCT unity finding, or the reverse.
 
 ## PCT
 

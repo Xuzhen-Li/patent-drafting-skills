@@ -44,7 +44,7 @@ Specific, substantial, and credible. A throwaway "for treating diseases" with no
 |----------|--------|-------|
 | Did the inventor list a disclosure before the effective filing date? | | |
 | If the disclosure was by the inventor or derived from the inventor, is the one-year window of § 102(b)(1) obviously satisfied, obviously missed, or unknown because the date is missing? | | Do not call the invention novel |
-| Would that same disclosure threaten a later CN national filing? | | Art. 24 is narrower. See `shared/jurisdictions.md` |
+| Would that same disclosure threaten a filing in a country without a one-year grace? | | Counsel checks each national phase. See `shared/jurisdictions.md` |
 
 ## E. Subject matter this checklist does not clear
 

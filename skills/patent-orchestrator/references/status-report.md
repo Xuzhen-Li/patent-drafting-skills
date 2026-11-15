@@ -5,8 +5,8 @@ Fill this in the chat. Do not create a second project status file.
 ```
 Project: <path>
 Title: <or [INVENTOR TO CONFIRM]>
-Jurisdiction: CN | US | PCT
-Language of drafts: zh | en
+Jurisdiction: US | PCT
+Language of drafts: en
 Screen: missing | proceed | proceed-narrowed | stop | stop-overridden
 
 Gates
@@ -32,7 +32,7 @@ Stage files
 
 Next skill: <exact skill name>
 Why: <one sentence>
-Open items: <【待发明人确认】 / [INVENTOR TO CONFIRM] list, or "none">
+Open items: <[INVENTOR TO CONFIRM] list, or "none">
 Public disclosure admitted: yes (date) | no | unknown
 ```
 

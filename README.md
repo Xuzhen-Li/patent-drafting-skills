@@ -1,49 +1,49 @@
 # patent-drafting-skills
 
-English | [中文](README.zh-CN.md)
+Agent skills for drafting an English invention patent: a US utility
+non-provisional or a PCT international application. You supply the technical
+idea; the agent interviews you, screens subject matter, searches real prior art,
+and locks the inventive points before writing any claims. Subsequent skills
+draft the claims, description, abstract, and drawings, check them for
+internal consistency, and export Word files. Nothing is filed on your
+behalf.
 
-An agent skill suite that helps a researcher or engineer turn a technical
-idea into a filing-ready **invention patent** draft. It supports three
-modes: a Chinese invention patent (发明专利), a US utility non-provisional,
-and a PCT international application (国际申请).
-
-The suite interviews you, screens subject matter, searches real prior art,
-and locks the inventive points before anyone writes claims. Later skills
-draft the claims, description, abstract, drawings, a consistency check, and
-Word files. Nothing is filed for you.
+For a Chinese invention patent (CNIPA, written in Chinese), use
+[patent-skills-private](https://github.com/Xuzhen-Li/patent-skills-private)
+instead. This repository no longer supports a Chinese mode.
 
 Author: Xuzhen Li. License: MIT.
 
 ## Disclaimer
 
-This is drafting assistance, not legal advice. It does not create a
-patent-agent relationship. Have a 专利代理师 (registered patent agent) or
-a patent attorney review the package before you file it. Office rules,
-fees, and forms change. Confirm them on the official site.
+This is a drafting aid, not legal advice, and does not create a
+patent-agent relationship. Have a registered patent agent or patent
+attorney review the package before filing. Patent office rules, fees, and
+forms change; verify them on the official site.
 
-Do not use the drafts to hide a publication or a close reference. A public
-disclosure before filing can destroy novelty. In China, your own paper is
-usually fatal: 专利法 Art. 24 is a narrow six-month exception, not a
-general grace period. In the United States, 35 U.S.C. § 102(b)(1) is a
-one-year inventor grace. A PCT filing does not invent a grace period.
+Do not use these drafts to conceal a publication or a close reference. A
+public disclosure before filing can destroy novelty. In the United States,
+35 U.S.C. § 102(b)(1) provides a one-year inventor grace period. A PCT
+filing does not establish a grace period, and some national phases (such as
+China) provide no general grace period for an inventor's own publication.
 
-## Who it is for
+## Scope
 
-Researchers and engineers drafting a first invention patent, including
-people who have a lab notebook and no claim-drafting habit. You stay the
-inventor. The agent writes only what you confirm, and it marks gaps as
-`【待发明人确认】` or `[INVENTOR TO CONFIRM]`.
+Designed for researchers and engineers drafting a first invention patent in
+English, including those working from a lab notebook with no prior
+claim-drafting experience. You remain the inventor. The agent writes only
+what you confirm and marks gaps as `[INVENTOR TO CONFIRM]`. If your notes
+are in Chinese, [shared/glossary_cn_en.md](shared/glossary_cn_en.md) lists
+standard English terms.
 
-It is a poor fit for design patents (外观设计), freedom-to-operate
-opinions, litigation, and office-action responses. Those are outside this
-suite. Utility models (实用新型) appear only as a recommendation inside
-the Chinese screen, not as a separate drafting track.
+Not covered: design patents, plant patents, freedom-to-operate opinions,
+litigation, and office-action responses.
 
 ## How a draft moves
 
-You start at `patent-orchestrator`. It reads `patent.yaml` and sends you
-to the first unfinished stage. After each stage, come back to the
-orchestrator. Human gates stop the pipeline until you explicitly approve.
+Begin with `patent-orchestrator`. It reads `patent.yaml` and routes you to
+the first unfinished stage. After each stage, return to the orchestrator.
+Human gates pause the workflow until you explicitly approve.
 
 ```mermaid
 flowchart TD
@@ -66,41 +66,41 @@ flowchart TD
   g5 -->|yes| counsel["Registered patent agent reviews before filing"]
 ```
 
-`patentability-screen` can stop the flow when the subject matter is
-excluded. `patent-drawings` can be skipped only when you record
-`drawings: none` because figures are not needed to understand the
-invention. A unity split goes back to the inventive-point skill before
-any single claim set is written. A sheet that fails the visual check or
-the checksum goes back to `patent-drawings`. Export embeds those sheets
-and stops if a checksum no longer matches.
+`patentability-screen` can halt the workflow when the subject matter is
+excluded. `patent-drawings` may be skipped only if you record
+`drawings: none` because figures are unnecessary to understand the
+invention. A unity split returns to the inventive-point skill before any
+single claim set is drafted. Any drawing sheet that fails visual inspection
+or checksum verification returns to `patent-drawings`. Export embeds those
+sheets and halts if a checksum no longer matches.
 
 ## Skills
 
 | # | Skill | What it does | Main output |
 |---|-------|----------------|-------------|
-| 0 | `patent-orchestrator` | Status, routing, gates, jurisdiction switch | Status report |
+| 0 | `patent-orchestrator` | Status, routing, gates, US/PCT switch | Status report |
 | 1 | `patent-project-setup` | Create the project tree and, when old drafts exist, copy them read-only and score the earliest real gap | `patent.yaml`, `incoming/`, `intake_score.json` |
-| 2 | `invention-disclosure-intake` | Interview you; origin tag and evidence grade on each feature and effect; invention lock | `00-disclosure/disclosure.md`, `fact_ledger.md` |
-| 3 | `patentability-screen` | Eligibility (CN Arts. 2, 5, 25; US § 101). CN: invention vs utility model | `01-eligibility/screen.md` |
-| 4 | `prior-art-search` | Real database searches, feature matrix, and whether one document shows every essential feature | `02-prior-art/search_log.md`, `feature_matrix.csv` |
-| 5 | `inventive-point-finder` | 三步法 or US § 103; unity on a special technical feature; unverified effects left out | `03-inventive-points/inventive_points.md` |
+| 2 | `invention-disclosure-intake` | Interview you; assign origin tag and evidence grade to each feature and effect; invention lock | `00-disclosure/disclosure.md`, `fact_ledger.md` |
+| 3 | `patentability-screen` | Eligibility (US § 101; PCT industrial applicability) | `01-eligibility/screen.md` |
+| 4 | `prior-art-search` | Real database searches, feature matrix, and whether a single document discloses every essential feature | `02-prior-art/search_log.md`, `feature_matrix.csv` |
+| 5 | `inventive-point-finder` | US § 103 or PCT Article 33; unity on a special technical feature; unverified effects left out | `03-inventive-points/inventive_points.md` |
 | 6 | `claims-drafter` | Dependency sketch before sentences; one invention or a documented combination; fee warning, no claim ceiling | `04-claims/claims.md` |
 | 7 | `description-writer` | Description, domain checklist, background admission pass, added-matter list, biology reminders | `05-description/description.md` |
-| 8 | `abstract-writer` | CN abstract ≤ 300 characters, or US abstract ≤ 150 words | `06-abstract/abstract.md` |
+| 8 | `abstract-writer` | Abstract ≤ 150 words | `06-abstract/abstract.md` |
 | 9 | `patent-drawings` | Frozen parts master, editable-source sheets, sha256 per sheet | `07-drawings/parts_master.json`, `sheet_manifest.json` |
-| 10 | `consistency-checker` | Opens each sheet; black-on-white and which figure shows each relationship | `08-consistency/report.md` |
-| 11 | `patent-docx-export` | Word files with the sheets embedded; export fails if a checksum changed | `09-package/*.docx` |
+| 10 | `consistency-checker` | Opens each sheet; black-on-white check and which figure shows each relationship | `08-consistency/report.md` |
+| 11 | `patent-docx-export` | Word files with embedded sheets; export fails if a checksum changed | `09-package/*.docx` |
 
-Skills 0–5 are the path from an idea to a locked inventive point. Skills
-6–11 turn that lock into filing documents. The spec for the whole suite
-is [docs/DESIGN.md](docs/DESIGN.md).
+Skills 0–5 take an idea to a locked inventive point. Skills 6–11 turn that
+lock into filing documents. The full specification for the suite is in
+[docs/DESIGN.md](docs/DESIGN.md).
 
 ## Install
 
-The script symlinks or copies each `skills/<name>` folder into the agent
-skill directory under `$HOME`. Default mode is `link`. A second run of the
-same command leaves a correct install unchanged. Link mode will not
-overwrite a real directory that already sits at the destination.
+The install script symlinks or copies each `skills/<name>` folder into the
+agent skill directory under `$HOME`. The default mode is `link`. Running
+the same command again leaves an existing valid install unchanged. Link
+mode will not overwrite a real directory already present at the target.
 
 | Target | Flag | Directory |
 |--------|------|-----------|
@@ -118,24 +118,14 @@ chmod +x install.sh
 ```
 
 `--mode link` (default) creates a symlink. `--mode copy` copies files and,
-on a later run, replaces that skill folder's contents. `--dry-run` prints
-the actions and writes nothing.
+on a subsequent run, replaces that skill folder's contents. `--dry-run`
+prints the planned actions without writing anything.
 
-Start a new agent session after installing so the new skills are picked
-up. `shared/` stays in this repository; it is not copied into the agent
-folder. Each skill's `SKILL.md` carries the procedure it needs.
+Start a new agent session after installing so the new skills are loaded.
+`shared/` stays in this repository and is not copied into the agent folder;
+each skill's `SKILL.md` contains the instructions it needs.
 
 ## Quick start
-
-Chinese invention patent:
-
-```
-我要写一个发明专利
-```
-
-The orchestrator routes to `patent-project-setup` with jurisdiction `CN`.
-You get a Chinese 技术交底书 template. The agent then interviews you and
-will not lock the invention until you say `发明人确认锁定交底`.
 
 US utility draft:
 
@@ -143,26 +133,28 @@ US utility draft:
 start a US patent draft
 ```
 
-Same path, jurisdiction `US`, English disclosure form, US eligibility
-checklist, and an obviousness worksheet instead of a Chinese grant conclusion.
+The orchestrator routes to `patent-project-setup` with jurisdiction `US`.
+You receive the English disclosure form, and the agent then interviews you
+and will not lock the invention until you confirm with
+`I confirm the invention lock`.
 
 PCT:
 
 ```
-起草一件PCT国际申请
+draft a PCT application
 ```
 
-English international draft. Say which national phases you care about
-(China, the United States, or both). The agent will not assume a list.
+Produces an English international draft. Specify which national phases
+matter to you; the agent will not assume a list.
 
-Have a project path ready, for example a folder you created for this
+Have a project path ready, such as a dedicated folder created for the
 invention. Do not paste unpublished numbers into a channel you do not
 want to keep.
 
 ## Project layout
 
-`patent-project-setup` creates this tree. Later skills write only to
-their own folders.
+`patent-project-setup` initializes this directory tree. Subsequent skills
+write only to their respective folders.
 
 ```
 <project>/
@@ -181,59 +173,55 @@ their own folders.
   LOG.md
 ```
 
-`patent.yaml` holds the title, jurisdiction, applicant, inventors, field,
+`patent.yaml` stores the title, jurisdiction, applicant, inventors, field,
 disclosure flag, drawing flag, and the five gates. `LOG.md` is append-only.
 
-## Jurisdiction modes
+## US and PCT
 
-Set `jurisdiction` to `CN`, `US`, or `PCT`. Outputs follow that mode:
-Chinese for `CN`, English for `US` and `PCT`. Switching later reopens
-the gates. The agent does not translate a locked Chinese claim set into
-a US claim set by itself.
+Set `jurisdiction` to `US` or `PCT`. All outputs are in English. Changing
+the jurisdiction later reopens the gates.
 
-| | CN | US | PCT |
-|---|----|----|-----|
-| What you are drafting | 发明专利 | Utility non-provisional | International application |
-| Claims | Two-part form with 其特征在于 when it fits | "Comprising" claims; Jepson form is optional | Two-part form where appropriate (PCT Rule 6.3) |
-| Description | 技术领域、背景技术、发明内容、附图说明、具体实施方式 | 37 CFR 1.77 sections | PCT Rule 5, including the best mode the inventor actually states |
-| Abstract | ≤ 300 characters, punctuation included; one 摘要附图 | ≤ 150 words (37 CFR 1.72(b)) | Preferably 50–150 English words (PCT Rule 8) |
-| Grace period | Art. 24, four cases, six months (2020): public-interest first disclosure during a national emergency or extraordinary situation; an international exhibition sponsored or recognized by the Chinese government; a prescribed academic or technological meeting; disclosure by another person without the applicant's consent | § 102(b)(1), one year, inventor-linked disclosures | None in the Treaty; national law applies later |
+| | US | PCT |
+|---|----|-----|
+| What you are drafting | Utility non-provisional | International application |
+| Claims | "Comprising" claims; Jepson form is optional | Two-part form where appropriate (PCT Rule 6.3) |
+| Description | 37 CFR 1.77 sections | PCT Rule 5, including the best mode the inventor actually states |
+| Abstract | ≤ 150 words (37 CFR 1.72(b)) | Preferably 50–150 words (PCT Rule 8) |
+| Grace period | § 102(b)(1), one year, inventor-linked disclosures | None in the Treaty; national law applies later |
 
 Document sets, drawing rules, and fee pointers:
 [shared/jurisdictions.md](shared/jurisdictions.md).
 
-Search only on official sites:
-[CNIPA search](https://pss-system.cponline.cnipa.gov.cn),
+Search only in these databases:
 [Google Patents](https://patents.google.com),
 [Espacenet](https://worldwide.espacenet.com),
 [The Lens](https://www.lens.org),
 [PATENTSCOPE](https://patentscope.wipo.int),
-[USPTO Patent Public Search](https://ppubs.uspto.gov/pubwebapp/).
+[USPTO Patent Public Search](https://ppubs.uspto.gov/pubwebapp/),
+and [CNIPA search](https://pss-system.cponline.cnipa.gov.cn) when Chinese
+prior art matters.
 
-Fees: [cnipa.gov.cn](https://www.cnipa.gov.cn),
-[uspto.gov](https://www.uspto.gov),
+Fees: [uspto.gov](https://www.uspto.gov),
 [patentscope.wipo.int](https://patentscope.wipo.int).
 The skills do not hard-code fee amounts.
 
-## Principles
+## Rules the skills follow
 
-1. Never invent experimental data, effects, or embodiments. Unknowns stay marked.
-2. Every claim feature must be supported by the description (专利法 Art. 26, paragraph 4; 35 U.S.C. § 112(a)).
-3. Antecedent basis: 所述 / "the" / "said" needs an earlier 一种 / "a".
-4. Reference signs in the description and the drawings match one-to-one. Formal sheets are PNG exports of an editable source, each with a sha256. Export embeds those bytes and stops if the hash changed.
+1. Never invent experimental data, effects, or embodiments. Unknowns remain marked.
+2. Every claim feature must be supported by the description (35 U.S.C. § 112(a); PCT Article 6).
+3. Antecedent basis: "the" or "said" requires an earlier "a" or "an".
+4. Reference signs in the description and drawings match one-to-one. Formal sheets are PNG exports of an editable source, each with a sha256. Export embeds those bytes and halts if a hash changes.
 5. Prior-art citations are real documents with publication numbers and links.
-6. Ask about public disclosure before drafting. Grace periods are not interchangeable across CN, US, and PCT.
-7. Human gates: invention lock, prior-art review, inventive-point lock, claim-set lock, final package. The agent cannot close a gate by itself. The final gate means the draft is internally complete. It still needs counsel before filing.
+6. Ask about public disclosure before drafting. The US grace period does not carry over to other countries.
+7. Human gates: invention lock, prior-art review, inventive-point lock, claim-set lock, final package. The agent cannot close a gate on its own. Reaching the final gate means the draft is internally complete; it still requires counsel before filing.
 
 Gate phrases and reopen rules: [shared/gates.md](shared/gates.md).
-Chinese–English terms: [shared/glossary_cn_en.md](shared/glossary_cn_en.md).
 
 ## Repository layout
 
 ```
 patent-drafting-skills/
   README.md
-  README.zh-CN.md
   LICENSE
   CHANGELOG.md
   install.sh
@@ -257,11 +245,21 @@ patent-drafting-skills/
     patent-docx-export/
 ```
 
-All twelve skills are in this tree. Each skill is a `SKILL.md` plus `references/`
-or `scripts/` where that skill needs them. Instructions in `SKILL.md`
-are English, with the Chinese legal term in parentheses the first time
-it appears. Chinese templates are for `CN`. English templates are for
-`US` and `PCT`.
+Each skill consists of a `SKILL.md` plus `references/` or `scripts/` where
+needed. Several scripts (`check_antecedent.py`, `check_abstract.py`,
+`check_numerals.py`, `build_docx.py`) still accept Chinese text and retain
+their Chinese test fixtures from v0.2.0; the skills invoke them in English
+mode only.
+
+## Running the tests
+
+```bash
+python3 -m pytest -q skills
+```
+
+The 8 tests in `skills/patent-docx-export/tests/test_build_docx.py` require
+python-docx (`pip install python-docx`). Without it, pytest skips that file
+and reports `49 passed, 1 skipped`; with it installed, you should see `57 passed`.
 
 ## License
 

@@ -27,14 +27,14 @@ Fill a row only for an office the inventor named. Otherwise write "not requested
 
 | Office | Extra check | Result |
 |--------|-------------|--------|
-| China | Run `eligibility-checklist.cn.md` against the same facts. Art. 25 exclusions and Art. 24 grace do not disappear because the first filing is a PCT application. | |
+| China | Out of scope for this English suite. Counsel checks Chinese exclusions and the narrower Chinese grace rules; the Chinese pack is https://github.com/Xuzhen-Li/patent-skills-private. Those rules do not disappear because the first filing is a PCT application. | |
 | United States | Run `eligibility-checklist.us.md`. § 101 is not an ISA ground in the same way, but it will matter at US national phase. | |
 
 ## C. Things to mark, not to draft
 
 - Sequence listing (WIPO ST.26) if the office will require one. Do not invent residues.
 - Deposit of biological material if the invention cannot be enabled without a deposit. Do not invent an accession number.
-- Genetic-resource source disclosure for a later CN national phase (专利法 Art. 26).
+- Genetic-resource source disclosure, if a national phase office the inventor named requires one (China does). Counsel checks it.
 
 ## Recommendation (one)
 
